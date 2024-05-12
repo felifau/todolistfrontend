@@ -24,15 +24,25 @@ export default defineComponent({
   },
   methods: {
     initTasks(): void {
-      this.addTask('WebTech M1')
-      this.addTask('WebTech M2')
-      this.addTask('Controlling Test 1')
+      this.addTask('WebTech M1', '31-05-2024' )
+      this.addTask('WebTech M2', '31-05-2024' )
+      this.addTask('Controlling Test 1', '31-05-2024' )
     },
-    addTask(title: string): void {
-      this.tasks.push({ title, id: this.currentId++, completed: false, deadline: '31-05-2024' })
+    addTask(title: string, deadline: string): void {
+      if (!title || !deadline) return; // checks if the title and deadline are empty
+      this.tasks.push({ title, id: this.currentId++, deadline, completed: false })
+      // Clear input fields after adding a new task
+      this.titleField = '';
+      this.deadline = '';
     },
     onFormSubmitted(): void {
-      this.addTask(this.titleField.valueOf())
+      this.addTask(this.titleField.valueOf(), this.deadline.valueOf())
+    },
+    deleteTask(task: Task): void {
+      this.tasks = this.tasks.filter(t => t.id !== task.id);
+    },
+    markAsCompleted(task: Task): void {
+    task.completed = true;
     }
   },
   mounted() {
@@ -42,27 +52,32 @@ export default defineComponent({
 </script>
 
 <template>
-  <div id="wrapper" >
-    <h2>{{ title }}</h2>
+  <div id="background" >
+    <h2 style="color: white">{{ title }}</h2>
     <form @submit="onFormSubmitted()" @submit.prevent>
       <!-- "@submit.prevent" prevents a page refresh after submitting form -->
       <input type="text" placeholder="Title" v-model="titleField" />
-      <button>Add Task</button>
+      <input type="text" placeholder="Deadline" v-model="deadline" />
+      <button :disabled="!titleField || !deadline">Add Task</button>
     </form>
-    <hr />
     <table>
       <tr>
-        <th>Title</th>
-        <th>Deadline</th>
-        <th>Completed?</th>
+        <th id="text">Title</th>
+        <th id="text">Deadline</th>
+        <th id="text">Completed?</th>
+        <th id="text">Actions</th>
       </tr>
       <tr v-if="!tasks.length">
         <td colspan="3">No tasks added so far!</td>
       </tr>
       <tr v-for="task in tasks" :key="task.id">
-        <td>{{ task.title }}</td>
-        <td>({{ task.deadline }})</td>
-        <td>({{ task.completed }})</td>
+        <td id="text">{{ task.title }}</td>
+        <td id="text">({{ task.deadline }})</td>
+        <td id="text">({{ task.completed }})</td>
+        <td>
+          <button @click="markAsCompleted(task)">Mark as Completed</button>
+          <button @click="deleteTask(task)">Delete Task</button>
+        </td>
       </tr>
     </table>
   </div>
@@ -71,7 +86,10 @@ export default defineComponent({
 
 <style scoped>
 #background {
-  background-color: blueviolet;
+  background-color: lightseagreen;
+}
+#text {
+  color: white;
 }
 
 form {
