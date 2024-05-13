@@ -24,9 +24,9 @@ export default defineComponent({
   },
   methods: {
     initTasks(): void {
-      this.addTask('WebTech M1', '31-05-2024' )
-      this.addTask('WebTech M2', '31-05-2024' )
-      this.addTask('Controlling Test 1', '31-05-2024' )
+      this.addTask('WebTech M1', '28-04-2024' )
+      this.addTask('WebTech M2', '12-05-2024' )
+      this.addTask('Controlling Test 1', '26-04-2024' )
     },
     addTask(title: string, deadline: string): void {
       if (!title || !deadline) return; // checks if the title and deadline are empty
@@ -43,6 +43,9 @@ export default defineComponent({
     },
     markAsCompleted(task: Task): void {
     task.completed = true;
+    },
+    markAsUncompleted(task: Task): void {
+      task.completed = false;
     }
   },
   mounted() {
@@ -53,30 +56,33 @@ export default defineComponent({
 
 <template>
   <div id="background" >
-    <h2 style="color: white">{{ title }}</h2>
+    <h2 style="color: black">{{ title }}</h2>
     <form @submit="onFormSubmitted()" @submit.prevent>
       <!-- "@submit.prevent" prevents a page refresh after submitting form -->
-      <input type="text" placeholder="Title" v-model="titleField" />
-      <input type="text" placeholder="Deadline" v-model="deadline" />
+      <input placeholder="Enter the Title..." v-model="titleField" />
+      <input placeholder="Enter the Deadline..." v-model="deadline" />
       <button :disabled="!titleField || !deadline">Add Task</button>
     </form>
     <table>
       <tr>
-        <th id="text">Title</th>
-        <th id="text">Deadline</th>
-        <th id="text">Completed?</th>
-        <th id="text">Actions</th>
+        <th >Title</th>
+        <th >Deadline</th>
+        <th >Completed?</th>
+        <th >Actions</th>
       </tr>
       <tr v-if="!tasks.length">
         <td colspan="3">No tasks added so far!</td>
       </tr>
       <tr v-for="task in tasks" :key="task.id">
-        <td id="text">{{ task.title }}</td>
-        <td id="text">({{ task.deadline }})</td>
-        <td id="text">({{ task.completed }})</td>
+        <td >{{ task.title }}</td>
+        <td >({{ task.deadline }})</td>
+        <td >({{ task.completed }})</td>
         <td>
-          <button @click="markAsCompleted(task)">Mark as Completed</button>
-          <button @click="deleteTask(task)">Delete Task</button>
+          <div class="action-buttons">
+            <button v-if="!task.completed" @click="markAsCompleted(task)" >Complete</button>
+            <button v-if="task.completed" @click="markAsUncompleted(task)" >Uncomplete</button>
+            <button @click="deleteTask(task)" >Delete Task</button>
+          </div>
         </td>
       </tr>
     </table>
@@ -86,7 +92,9 @@ export default defineComponent({
 
 <style scoped>
 #background {
-  background-color: lightseagreen;
+  background-color: #FFCCBC;
+  border-radius: 10px;
+  padding: 20px;
 }
 #text {
   color: white;
@@ -114,9 +122,8 @@ table {
   }
 }
 
-
 button {
-  border-radius: 48px;
+  border-radius: 10px;
   padding: 8px;
   border: none;
   cursor: pointer;

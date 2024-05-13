@@ -4,9 +4,9 @@
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
 
-  --vt-c-black: seagreen;
-  --vt-c-black-soft: seagreen;
-  --vt-c-black-mute: seagreen;
+  --vt-c-black: #E1F5FE;
+  --vt-c-black-soft: #E1F5FE;
+  --vt-c-black-mute: #E1F5FE;
 
   --vt-c-indigo: #2c3e50;
 
@@ -46,7 +46,7 @@
     --color-border-hover: var(--vt-c-divider-dark-1);
 
     --color-heading: var(--vt-c-text-dark-1);
-    --color-text: var(--vt-c-text-dark-2);
+    --color-text: #333333;
   }
 }
 
