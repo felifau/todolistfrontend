@@ -1,5 +1,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import DefaultButton from '@/components/DefaultButton.vue';
+import DefaultBackground from '@/components/DefaultBackground.vue'
 
 type Task = { id: number; title: string; deadline: string; completed: boolean}
 type TasksList = {
@@ -12,6 +14,12 @@ type TasksList = {
 
 export default defineComponent({
   name: 'ToDoList',
+  components: { DefaultButton, DefaultBackground },
+  computed: {
+    DefaultButton() {
+      return DefaultButton
+    }
+  },
   props: ['title'],
   data(): TasksList {
     return {
@@ -55,50 +63,48 @@ export default defineComponent({
 </script>
 
 <template>
-  <div id="background" >
+  <DefaultBackground>
     <h2 style="color: black">{{ title }}</h2>
     <form @submit="onFormSubmitted()" @submit.prevent>
       <!-- "@submit.prevent" prevents a page refresh after submitting form -->
       <input placeholder="Enter the Title..." v-model="titleField" />
       <input placeholder="Enter the Deadline..." v-model="deadline" />
-      <button :disabled="!titleField || !deadline">Add Task</button>
+      <DefaultButton @click="onFormSubmitted" :disabled="!titleField || !deadline">
+        Add Task
+      </DefaultButton>
     </form>
     <table>
       <tr>
-        <th >Title</th>
-        <th >Deadline</th>
-        <th >Completed?</th>
-        <th >Actions</th>
+        <th>Title</th>
+        <th>Deadline</th>
+        <th>Completed?</th>
+        <th>Actions</th>
       </tr>
       <tr v-if="!tasks.length">
         <td colspan="3">No tasks added so far!</td>
       </tr>
       <tr v-for="task in tasks" :key="task.id">
-        <td >{{ task.title }}</td>
-        <td >({{ task.deadline }})</td>
-        <td >({{ task.completed }})</td>
+        <td>{{ task.title }}</td>
+        <td>{{ task.deadline }}</td>
+        <td>{{ task.completed }}</td>
         <td>
           <div class="action-buttons">
-            <button v-if="!task.completed" @click="markAsCompleted(task)" >Complete</button>
-            <button v-if="task.completed" @click="markAsUncompleted(task)" >Uncomplete</button>
-            <button @click="deleteTask(task)" >Delete Task</button>
+            <DefaultButton @click="markAsCompleted(task)" v-if="!task.completed">
+              Complete
+            </DefaultButton>
+            <DefaultButton @click="markAsUncompleted(task)" v-if="task.completed">
+              Uncomplete
+            </DefaultButton>
+            <DefaultButton @click="deleteTask(task)">Delete Task</DefaultButton>
           </div>
         </td>
       </tr>
     </table>
-  </div>
+  </DefaultBackground>
 </template>
 
 
 <style scoped>
-#background {
-  background-color: #FFCCBC;
-  border-radius: 10px;
-  padding: 20px;
-}
-#text {
-  color: white;
-}
 
 form {
   display: flex;
