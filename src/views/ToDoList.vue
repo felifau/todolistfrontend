@@ -1,9 +1,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import DefaultButton from '@/components/DefaultButton.vue';
 import DefaultBackground from '@/components/DefaultBackground.vue'
+import DefaultButton from '@/components/DefaultButton.vue'
+import TasksTable from '@/components/TasksTable.vue'
+import { Task } from '@/types/Task';
 
-type Task = { id: number; title: string; deadline: string; completed: boolean}
+// type Task = { id: number; title: string; deadline: string; completed: boolean}
 type TasksList = {
   tasks: Task[]
   titleField: string
@@ -14,19 +16,14 @@ type TasksList = {
 
 export default defineComponent({
   name: 'ToDoList',
-  components: { DefaultButton, DefaultBackground },
-  computed: {
-    DefaultButton() {
-      return DefaultButton
-    }
-  },
+  components: { TasksTable, DefaultButton, DefaultBackground },
   props: ['title'],
   data(): TasksList {
     return {
-      titleField: '',
-      currentId: 1,
-      deadline: '',
       completed: false,
+      currentId: 0,
+      deadline: '',
+      titleField: '',
       tasks: []
     }
   },
@@ -37,20 +34,19 @@ export default defineComponent({
       this.addTask('Controlling Test 1', '26-04-2024' )
     },
     addTask(title: string, deadline: string): void {
-      if (!title || !deadline) return; // checks if the title and deadline are empty
-      this.tasks.push({ title, id: this.currentId++, deadline, completed: false })
+      this.tasks.push({ id: this.currentId++, title, deadline, completed: false })
       // Clear input fields after adding a new task
       this.titleField = '';
       this.deadline = '';
     },
     onFormSubmitted(): void {
-      this.addTask(this.titleField.valueOf(), this.deadline.valueOf())
+      this.addTask(this.titleField, this.deadline);
     },
     deleteTask(task: Task): void {
       this.tasks = this.tasks.filter(t => t.id !== task.id);
     },
     markAsCompleted(task: Task): void {
-    task.completed = true;
+      task.completed = true;
     },
     markAsUncompleted(task: Task): void {
       task.completed = false;
@@ -65,41 +61,19 @@ export default defineComponent({
 <template>
   <DefaultBackground>
     <h2 style="color: black">{{ title }}</h2>
-    <form @submit="onFormSubmitted()" @submit.prevent>
-      <!-- "@submit.prevent" prevents a page refresh after submitting form -->
+    <form @submit="onFormSubmitted" @submit.prevent>
       <input placeholder="Enter the Title..." v-model="titleField" />
       <input placeholder="Enter the Deadline..." v-model="deadline" />
       <DefaultButton @click="onFormSubmitted" :disabled="!titleField || !deadline">
         Add Task
       </DefaultButton>
     </form>
-    <table>
-      <tr>
-        <th>Title</th>
-        <th>Deadline</th>
-        <th>Completed?</th>
-        <th>Actions</th>
-      </tr>
-      <tr v-if="!tasks.length">
-        <td colspan="3">No tasks added so far!</td>
-      </tr>
-      <tr v-for="task in tasks" :key="task.id">
-        <td>{{ task.title }}</td>
-        <td>{{ task.deadline }}</td>
-        <td>{{ task.completed }}</td>
-        <td>
-          <div class="action-buttons">
-            <DefaultButton @click="markAsCompleted(task)" v-if="!task.completed">
-              Complete
-            </DefaultButton>
-            <DefaultButton @click="markAsUncompleted(task)" v-if="task.completed">
-              Uncomplete
-            </DefaultButton>
-            <DefaultButton @click="deleteTask(task)">Delete Task</DefaultButton>
-          </div>
-        </td>
-      </tr>
-    </table>
+    <TasksTable
+      :tasks="tasks"
+      @mark-as-completed="markAsCompleted"
+      @mark-as-uncompleted="markAsUncompleted"
+      @delete-task="deleteTask"
+    />
   </DefaultBackground>
 </template>
 
