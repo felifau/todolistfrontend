@@ -1,13 +1,13 @@
 <script lang="ts">
 import DefaultButton from '@/components/DefaultButton.vue'
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 
-export default defineComponent ({
+export default defineComponent({
   name: 'TaskRow',
   components: { DefaultButton },
   props: {
     task: {
-      type: Object,
+      type: Object as PropType<{ id: number; title: string; details: string; deadline: string; completed: boolean }>,
       required: true
     }
   },
@@ -41,5 +41,9 @@ export default defineComponent ({
 </template>
 
 <style scoped>
-
+/* Add any styles specific to the TaskRow component here */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
 </style>
