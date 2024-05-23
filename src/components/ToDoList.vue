@@ -28,21 +28,21 @@ export default defineComponent({
       }
 
       axios
-        .post<Task>(`${url}/task`, task)
+        .post<Task>(`${url}/`, task)
         .then((response) => tasks.value.push(response.data))
         .catch((error) => console.log(error))
     }
 
     function requestTasks(): void {
       axios
-        .get<Task[]>(`${url}/task`)
+        .get<Task[]>(`${url}/`)
         .then((response) => (tasks.value = response.data))
         .catch((error) => console.log(error))
     }
 
     function removeTask(id: number): void {
       axios
-        .delete<void>(`${url}/task/${id}`)
+        .delete<void>(`${url}/`)
         .then(() => (tasks.value = tasks.value.filter((t) => t.id !== id)))
         .catch((error) => console.log(error))
     }
