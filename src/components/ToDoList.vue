@@ -1,10 +1,10 @@
 <script lang="ts">
-import { defineComponent, onMounted, ref, type Ref } from 'vue'
-import axios from 'axios'
+import { defineComponent, onMounted, ref, type Ref } from 'vue';
+import axios from 'axios';
 
-import DefaultBackground from '@/components/DefaultBackground.vue'
-import DefaultButton from '@/components/DefaultButton.vue'
-import TasksTable from '@/components/TasksTable.vue'
+import DefaultBackground from '@/components/DefaultBackground.vue';
+import DefaultButton from '@/components/DefaultButton.vue';
+import TasksTable from '@/components/TasksTable.vue';
 
 export default defineComponent({
   components: { TasksTable, DefaultButton, DefaultBackground },
