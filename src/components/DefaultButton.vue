@@ -8,7 +8,7 @@ export default defineComponent ({
     disabled: Boolean
   },
   methods: {
-    handleClick(event) {
+    handleClick() {
       if (!this.disabled) {
         this.$emit('click', event);
       }
