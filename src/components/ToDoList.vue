@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
+import { format, parseISO } from 'date-fns'
 import DefaultBackground from '@/components/DefaultBackground.vue';
 import DefaultButton from '@/components/DefaultButton.vue'
 
@@ -12,7 +13,7 @@ export default defineComponent({
     const tasks: Ref<Task[]> = ref([])
     const titleField = ref('')
     const detailsField = ref('')
-    const deadlineField = ref('') // Использование строки для даты в формате YYYY-MM-DD
+    const deadlineField = ref('')
     const completedField = ref(false)
 
     const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
@@ -20,7 +21,7 @@ export default defineComponent({
     function createTask(): void {
       const task = {
         title: titleField.value,
-        deadline: deadlineField.value, // Формат YYYY-MM-DD
+        deadline: deadlineField.value,
         details: detailsField.value,
         completed: completedField.value,
       }
@@ -34,13 +35,20 @@ export default defineComponent({
     function requestTasks(): void {
       axios
         .get<Task[]>(`${url}/`)
-        .then((response) => (tasks.value = response.data))
-        .catch((error) => console.log(error))
+        .then((response) => {
+          tasks.value = response.data.map(task => ({
+            ...task,
+            deadline: format(parseISO(task.deadline), 'yyyy-MM-dd')
+          }));
+        })
+        .catch((error) => {
+          console.error('Error fetching tasks:', error);
+        });
     }
 
     function removeTask(id: number): void {
       axios
-        .delete<void>(`${url}/${id}`) // Include the task ID in the URL
+        .delete<void>(`${url}/${id}`)
         .then(() => (tasks.value = tasks.value.filter((t) => t.id !== id)))
         .catch((error) => console.log(error));
     }
@@ -66,7 +74,7 @@ export default defineComponent({
     <h2 style="color: black">Task Manager</h2>
     <form @submit="createTask()" @submit.prevent>
       <input type="text" placeholder="Enter the Title..." v-model="titleField" />
-      <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" /> <!-- Тип date -->
+      <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
       <DefaultButton @click="createTask()" :disabled="!titleField || !deadlineField">
         Add Task
       </DefaultButton>
