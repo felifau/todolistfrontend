@@ -1,9 +1,9 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
-import { format, parseISO } from 'date-fns'
+import { format, parseISO } from 'date-fns';
 import DefaultBackground from '@/components/DefaultBackground.vue';
-import DefaultButton from '@/components/DefaultButton.vue'
+import DefaultButton from '@/components/DefaultButton.vue';
 
 export default defineComponent({
   components: { DefaultButton, DefaultBackground },
@@ -19,6 +19,7 @@ export default defineComponent({
     const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
     function createTask(): void {
+
       const task = {
         title: titleField.value,
         deadline: deadlineField.value,
@@ -26,10 +27,17 @@ export default defineComponent({
         completed: completedField.value,
       }
 
+      console.log('Creating task:', task);
+
       axios
         .post<Task>(`${url}/`, task)
-        .then((response) => tasks.value.push(response.data))
-        .catch((error) => console.log(error))
+        .then((response) => {
+          console.log('Task created:', response.data);
+          tasks.value.push(response.data);
+        })
+        .catch((error) => {
+          console.error('Error creating task:', error);
+        });
     }
 
     function requestTasks(): void {
@@ -40,6 +48,7 @@ export default defineComponent({
             ...task,
             deadline: format(parseISO(task.deadline), 'yyyy-MM-dd')
           }));
+          console.log('Tasks fetched:', tasks.value);
         })
         .catch((error) => {
           console.error('Error fetching tasks:', error);
@@ -49,11 +58,19 @@ export default defineComponent({
     function removeTask(id: number): void {
       axios
         .delete<void>(`${url}/${id}`)
-        .then(() => (tasks.value = tasks.value.filter((t) => t.id !== id)))
-        .catch((error) => console.log(error));
+        .then(() => {
+          tasks.value = tasks.value.filter((t) => t.id !== id);
+          console.log('Task removed:', id);
+        })
+        .catch((error) => {
+          console.error('Error deleting task:', error);
+        });
     }
 
-    onMounted(() => requestTasks())
+    onMounted(() => {
+      console.log('Component mounted, fetching tasks');
+      requestTasks();
+    });
 
     return {
       tasks,
@@ -72,10 +89,10 @@ export default defineComponent({
 <template>
   <DefaultBackground>
     <h2 style="color: black">Task Manager</h2>
-    <form @submit="createTask()" @submit.prevent>
+    <form @submit.prevent="createTask">
       <input type="text" placeholder="Enter the Title..." v-model="titleField" />
       <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
-      <DefaultButton @click="createTask()" :disabled="!titleField || !deadlineField">
+      <DefaultButton :disabled="!titleField || !deadlineField">
         Add Task
       </DefaultButton>
     </form>
