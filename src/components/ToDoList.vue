@@ -17,7 +17,7 @@ export default defineComponent({
     const deadlineField = ref('')
     const completedField = ref(false)
 
-    const url = import.meta.env.VITE_APP_BACKEND_BASE_URL
+    const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
     function createTask(): void {
       const task = {
@@ -42,9 +42,9 @@ export default defineComponent({
 
     function removeTask(id: number): void {
       axios
-        .delete<void>(`${url}/`)
+        .delete<void>(`${url}/${id}`) // Include the task ID in the URL
         .then(() => (tasks.value = tasks.value.filter((t) => t.id !== id)))
-        .catch((error) => console.log(error))
+        .catch((error) => console.log(error));
     }
 
     onMounted(() => requestTasks())
