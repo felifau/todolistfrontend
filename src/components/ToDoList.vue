@@ -1,20 +1,18 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
-
 import DefaultBackground from '@/components/DefaultBackground.vue';
-import DefaultButton from '@/components/DefaultButton.vue';
-import TasksTable from '@/components/TasksTable.vue';
+import DefaultButton from '@/components/DefaultButton.vue'
 
 export default defineComponent({
-  components: { TasksTable, DefaultButton, DefaultBackground },
+  components: { DefaultButton, DefaultBackground },
   setup() {
     type Task = { id: number; title: string; details: string; deadline: string; completed: boolean }
 
     const tasks: Ref<Task[]> = ref([])
     const titleField = ref('')
     const detailsField = ref('')
-    const deadlineField = ref('')
+    const deadlineField = ref('') // Использование строки для даты в формате YYYY-MM-DD
     const completedField = ref(false)
 
     const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
@@ -22,7 +20,7 @@ export default defineComponent({
     function createTask(): void {
       const task = {
         title: titleField.value,
-        deadline: deadlineField.value,
+        deadline: deadlineField.value, // Формат YYYY-MM-DD
         details: detailsField.value,
         completed: completedField.value,
       }
@@ -68,21 +66,40 @@ export default defineComponent({
     <h2 style="color: black">Task Manager</h2>
     <form @submit="createTask()" @submit.prevent>
       <input type="text" placeholder="Enter the Title..." v-model="titleField" />
-      <input placeholder="Enter the Deadline..." v-model="deadlineField" />
+      <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" /> <!-- Тип date -->
       <DefaultButton @click="createTask()" :disabled="!titleField || !deadlineField">
         Add Task
       </DefaultButton>
     </form>
-    <TasksTable
-      :tasks="tasks"
-      @delete-task="removeTask"
-    />
+    <table>
+      <thead>
+      <tr>
+        <th>Title</th>
+        <th>Deadline</th>
+        <th>Completed?</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr v-if="!tasks.length">
+        <td colspan="4">No tasks added so far!</td>
+      </tr>
+      <tr v-for="task in tasks" :key="task.id">
+        <td>{{ task.title }}</td>
+        <td>{{ task.deadline }}</td>
+        <td>{{ task.completed ? 'Yes' : 'No' }}</td>
+        <td>
+          <div class="action-buttons">
+            <DefaultButton @click="removeTask(task.id)">Delete Task</DefaultButton>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </DefaultBackground>
 </template>
 
-
 <style scoped>
-
 form {
   display: flex;
   margin: 0 -16px;
@@ -110,5 +127,10 @@ button {
   padding: 8px;
   border: none;
   cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
 }
 </style>
