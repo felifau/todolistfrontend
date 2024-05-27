@@ -67,6 +67,23 @@ export default defineComponent({
         });
     }
 
+    function markAsCompleted(id: number): void {
+      axios
+        .get<void>(`${url}/uncomplete/${id}`)
+        .then(() => {
+          tasks.value = tasks.value.map((t) => {
+            if (t.id === id) {
+              t.completed = true;
+            }
+            return t;
+          });
+          console.log('Task marked as uncompleted:', id);
+        })
+        .catch((error) => {
+          console.error('Error marking task as uncompleted:', error);
+        });
+    }
+
     onMounted(() => {
       console.log('Component mounted, fetching tasks');
       requestTasks();
@@ -81,6 +98,7 @@ export default defineComponent({
       createTask,
       removeTask,
       requestTasks,
+      markAsCompleted,
     }
   },
 })
@@ -116,6 +134,7 @@ export default defineComponent({
         <td>
           <div class="action-buttons">
             <DefaultButton @click="removeTask(task.id)">Delete Task</DefaultButton>
+            <DefaultButton @click="markAsCompleted(task.id)">Delete Task</DefaultButton>
           </div>
         </td>
       </tr>
