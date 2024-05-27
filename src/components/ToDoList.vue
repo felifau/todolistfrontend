@@ -69,7 +69,7 @@ export default defineComponent({
 
     function markAsCompleted(id: number): void {
       axios
-        .get<void>(`${url}/uncomplete/${id}`)
+        .get<void>(`${url}/${id}`)
         .then(() => {
           tasks.value = tasks.value.map((t) => {
             if (t.id === id) {
@@ -134,7 +134,7 @@ export default defineComponent({
         <td>
           <div class="action-buttons">
             <DefaultButton @click="removeTask(task.id)">Delete Task</DefaultButton>
-            <DefaultButton @click="markAsCompleted(task.id)">Delete Task</DefaultButton>
+            <DefaultButton @click="markAsCompleted(task.id)">Mark Completed</DefaultButton>
           </div>
         </td>
       </tr>
