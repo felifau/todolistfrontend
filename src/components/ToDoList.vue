@@ -30,7 +30,7 @@ export default defineComponent({
       console.log('Creating task:', task);
 
       axios
-        .post<Task>(`${url}/`, task)
+        .post<Task>(`${url}/tasks`, task)
         .then((response) => {
           console.log('Task created:', response.data);
           tasks.value.push(response.data);
@@ -42,7 +42,7 @@ export default defineComponent({
 
     function requestTasks(): void {
       axios
-        .get<Task[]>(`${url}/`)
+        .get<Task[]>(`${url}/tasks`)
         .then((response) => {
           tasks.value = response.data.map(task => ({
             ...task,
@@ -57,7 +57,7 @@ export default defineComponent({
 
     function removeTask(id: number): void {
       axios
-        .delete<void>(`${url}/${id}`)
+        .delete<void>(`${url}/tasks/${id}`)
         .then(() => {
           tasks.value = tasks.value.filter((t) => t.id !== id);
           console.log('Task removed:', id);
@@ -70,7 +70,7 @@ export default defineComponent({
     // anderes request
     function markAsCompleted(id: number): void {
       axios
-        .post<void>(`${url}/${id}/complete`)
+        .post<void>(`${url}/tasks/${id}/complete`)
         .then(() => {
           tasks.value = tasks.value.map((t) => {
             if (t.id === id) {
@@ -87,7 +87,7 @@ export default defineComponent({
 
     function markAsUncompleted(id: number): void {
       axios
-        .post<void>(`${url}/${id}`)
+        .post<void>(`${url}/tasks/${id}/uncomplete`)
         .then(() => {
           tasks.value = tasks.value.map((t) => {
             if (t.id === id) {
