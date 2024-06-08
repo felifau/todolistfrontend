@@ -70,7 +70,7 @@ export default defineComponent({
     // anderes request
     function markAsCompleted(id: number): void {
       axios
-        .post<void>(`${url}/${id}`)
+        .post<void>(`${url}/${id}/complete`)
         .then(() => {
           tasks.value = tasks.value.map((t) => {
             if (t.id === id) {
