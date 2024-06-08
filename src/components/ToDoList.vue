@@ -8,7 +8,7 @@ import DefaultButton from '@/components/DefaultButton.vue';
 export default defineComponent({
   components: { DefaultButton, DefaultBackground },
   setup() {
-    type Task = { id: number; title: string; details: string; deadline: string; completed: boolean }
+    type Task = { id: number; title: string; details: string; deadline: Date; completed: boolean }
 
     const tasks: Ref<Task[]> = ref([])
     const titleField = ref('')
@@ -44,10 +44,10 @@ export default defineComponent({
       axios
         .get<Task[]>(`${url}/tasks`)
         .then((response) => {
-          tasks.value = response.data.map(task => ({
-            ...task,
-            deadline: format(parseISO(task.deadline), 'yyyy-MM-dd')
-          }));
+          tasks.value = response.data.map(task => {
+            task.deadline = new Date(task.deadline);
+            return task;
+          });
           console.log('Tasks fetched:', tasks.value);
         })
         .catch((error) => {
