@@ -67,9 +67,10 @@ export default defineComponent({
         });
     }
 
+    // anderes request
     function markAsCompleted(id: number): void {
       axios
-        .get<void>(`${url}/${id}`)
+        .post<void>(`${url}/${id}`)
         .then(() => {
           tasks.value = tasks.value.map((t) => {
             if (t.id === id) {
@@ -86,7 +87,7 @@ export default defineComponent({
 
     function markAsUncompleted(id: number): void {
       axios
-        .get<void>(`${url}/${id}`)
+        .post<void>(`${url}/${id}`)
         .then(() => {
           tasks.value = tasks.value.map((t) => {
             if (t.id === id) {
