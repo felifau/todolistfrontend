@@ -1,7 +1,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import DefaultBackground from '@/components/DefaultBackground.vue';
 import DefaultButton from '@/components/DefaultButton.vue';
 
@@ -15,11 +15,12 @@ export default defineComponent({
     const detailsField = ref('')
     const deadlineField = ref('')
     const completedField = ref(false)
+    const editMode = ref(false)
+    const editTaskId = ref<number | null>(null)
 
     const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
     function createTask(): void {
-
       const task = {
         title: titleField.value,
         deadline: deadlineField.value,
@@ -67,7 +68,6 @@ export default defineComponent({
         });
     }
 
-    // anderes request
     function markAsCompleted(id: number): void {
       axios
         .post<void>(`${url}/tasks/${id}/complete`)
@@ -78,10 +78,10 @@ export default defineComponent({
             }
             return t;
           });
-          console.log('Task marked as uncompleted:', id);
+          console.log('Task marked as completed:', id);
         })
         .catch((error) => {
-          console.error('Error marking task as uncompleted:', error);
+          console.error('Error marking task as completed:', error);
         });
     }
 
@@ -102,6 +102,54 @@ export default defineComponent({
         });
     }
 
+    function editTask(id: number): void {
+      const task = tasks.value.find(t => t.id === id);
+      if (task) {
+        titleField.value = task.title;
+        detailsField.value = task.details;
+        deadlineField.value = format(task.deadline, 'yyyy-MM-dd');
+        completedField.value = task.completed;
+        editTaskId.value = id;
+        editMode.value = true;
+      }
+    }
+
+    function updateTask(): void {
+      if (editTaskId.value === null) return;
+
+      const task = {
+        title: titleField.value,
+        deadline: deadlineField.value,
+        details: detailsField.value,
+        completed: completedField.value,
+      }
+
+      axios
+        .put<Task>(`${url}/tasks/${editTaskId.value}`, task)
+        .then((response) => {
+          tasks.value = tasks.value.map(t => {
+            if (t.id === editTaskId.value) {
+              return response.data;
+            }
+            return t;
+          });
+          resetForm();
+          console.log('Task updated:', response.data);
+        })
+        .catch((error) => {
+          console.error('Error updating task:', error);
+        });
+    }
+
+    function resetForm(): void {
+      titleField.value = '';
+      detailsField.value = '';
+      deadlineField.value = '';
+      completedField.value = false;
+      editMode.value = false;
+      editTaskId.value = null;
+    }
+
     onMounted(() => {
       console.log('Component mounted, fetching tasks');
       requestTasks();
@@ -113,24 +161,33 @@ export default defineComponent({
       detailsField,
       deadlineField,
       completedField,
+      editMode,
+      editTaskId,
       createTask,
       removeTask,
       requestTasks,
       markAsCompleted,
       markAsUncompleted,
+      editTask,
+      updateTask,
+      resetForm,
     }
   },
 })
 </script>
 
+
 <template>
   <DefaultBackground>
     <h2 style="color: black">Task Manager</h2>
-    <form @submit.prevent="createTask">
+    <form @submit.prevent="editMode ? updateTask() : createTask()">
       <input type="text" placeholder="Enter the Title..." v-model="titleField" />
       <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
       <DefaultButton :disabled="!titleField || !deadlineField">
-        Add Task
+        {{ editMode ? 'Update Task' : 'Add Task' }}
+      </DefaultButton>
+      <DefaultButton v-if="editMode" @click="resetForm">
+        Cancel Edit
       </DefaultButton>
     </form>
     <table>
@@ -152,11 +209,12 @@ export default defineComponent({
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
           <div class="action-buttons">
+            <DefaultButton @click="editTask(task.id)">Edit Task</DefaultButton>
             <DefaultButton @click="removeTask(task.id)">Delete Task</DefaultButton>
-            <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)" >
+            <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)">
               Mark Completed
             </DefaultButton>
-            <DefaultButton v-else @click="markAsUncompleted(task.id)" >
+            <DefaultButton v-else @click="markAsUncompleted(task.id)">
               Mark Uncompleted
             </DefaultButton>
           </div>
@@ -166,6 +224,8 @@ export default defineComponent({
     </table>
   </DefaultBackground>
 </template>
+
+
 
 <style scoped>
 form {
@@ -202,3 +262,4 @@ button {
   gap: 0.5rem;
 }
 </style>
+
