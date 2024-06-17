@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, onMounted, ref, type Ref } from 'vue';
+import { computed, defineComponent, onMounted, ref, type Ref } from 'vue'
 import axios from 'axios';
 import { format, formatDate } from 'date-fns'
 import DefaultBackground from '@/components/DefaultBackground.vue';
@@ -24,6 +24,12 @@ export default defineComponent({
     const editTaskId = ref<number | null>(null)
 
     const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+
+
+
+    const deadlineDate = computed(() => {
+      return deadlineField.value ? new Date(deadlineField.value) : null;
+    });
 
     function createTask(): void {
       const task = {
@@ -176,6 +182,7 @@ export default defineComponent({
       editTask,
       updateTask,
       resetForm,
+      deadlineDate
     }
   },
 })
@@ -187,7 +194,10 @@ export default defineComponent({
     <h2 style="color: black">Task Manager</h2>
     <form @submit.prevent="editMode ? updateTask() : createTask()">
       <input type="text" placeholder="Enter the Title..." v-model="titleField" />
-      <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
+      <div>
+        <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
+        <p>{{ deadlineDate }}</p>
+      </div>
       <DefaultButton :disabled="!titleField || !deadlineField">
         {{ editMode ? 'Update Task' : 'Add Task' }}
       </DefaultButton>
@@ -209,7 +219,7 @@ export default defineComponent({
         <td colspan="4">No tasks added so far!</td>
       </tr>
       <tr v-for="task in tasks" :key="task.id">
-        <td>{{ task.title }}</td>
+        <td>{{ task.title }}</td>`
         <td>{{ formatDate(task.deadline, 'dd mmm yy', { locale: de() }) }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
