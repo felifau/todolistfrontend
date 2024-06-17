@@ -1,11 +1,16 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue';
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, formatDate } from 'date-fns'
 import DefaultBackground from '@/components/DefaultBackground.vue';
 import DefaultButton from '@/components/DefaultButton.vue';
+import { de } from 'date-fns/locale'
 
 export default defineComponent({
+  methods: {
+    de() {
+      return de
+    }, formatDate },
   components: { DefaultButton, DefaultBackground },
   setup() {
     type Task = { id: number; title: string; details: string; deadline: Date; completed: boolean }
@@ -205,7 +210,7 @@ export default defineComponent({
       </tr>
       <tr v-for="task in tasks" :key="task.id">
         <td>{{ task.title }}</td>
-        <td>{{ task.deadline }}</td>
+        <td>{{ formatDate(task.deadline, 'dd mmm yy', { locale: de() }) }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
           <div class="action-buttons">
