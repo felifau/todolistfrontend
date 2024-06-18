@@ -24,6 +24,7 @@ export default defineComponent({
     const editTaskId = ref<number | null>(null)
 
     const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
 
