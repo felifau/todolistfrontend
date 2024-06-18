@@ -107,7 +107,7 @@ export default defineComponent({
       if (task) {
         titleField.value = task.title;
         detailsField.value = task.details;
-        deadlineField.value = format(task.deadline, 'yyyy-MM-dd');
+        deadlineField.value = format(task.deadline, 'dd-MM-yyyy');
         completedField.value = task.completed;
         editTaskId.value = id;
         editMode.value = true;
@@ -150,6 +150,10 @@ export default defineComponent({
       editTaskId.value = null;
     }
 
+    function formatDate(date: Date): string {
+      return format(date, 'dd.MM.yy');
+    }
+
     onMounted(() => {
       console.log('Component mounted, fetching tasks');
       requestTasks();
@@ -171,11 +175,11 @@ export default defineComponent({
       editTask,
       updateTask,
       resetForm,
+      formatDate,
     }
   },
 })
 </script>
-
 
 <template>
   <DefaultBackground>
@@ -205,7 +209,7 @@ export default defineComponent({
       </tr>
       <tr v-for="task in tasks" :key="task.id">
         <td>{{ task.title }}</td>
-        <td>{{ task.deadline }}</td>
+        <td>{{ formatDate(task.deadline) }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
           <div class="action-buttons">
@@ -224,8 +228,6 @@ export default defineComponent({
     </table>
   </DefaultBackground>
 </template>
-
-
 
 <style scoped>
 form {
@@ -262,4 +264,3 @@ button {
   gap: 0.5rem;
 }
 </style>
-
