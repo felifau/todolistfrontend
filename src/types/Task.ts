@@ -6,18 +6,18 @@ export interface Task {
   id: number;
   title: string;
   details: string;
-  deadline: string;
+  deadline: Date;
   completed: boolean;
 }
 
 export class Task {
   id: number;
   title: string;
-  deadline: string;
+  deadline: Date;
   details: string;
   completed: boolean;
 
-  constructor(title: string, deadline: string, details: string) {
+  constructor(title: string, deadline: Date, details: string) {
     this.id = taskId++;
     this.title = title;
     this.details = details;

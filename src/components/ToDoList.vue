@@ -1,11 +1,16 @@
 <script lang="ts">
-import { defineComponent, onMounted, ref, type Ref } from 'vue';
+import { computed, defineComponent, onMounted, ref, type Ref } from 'vue'
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, formatDate } from 'date-fns'
 import DefaultBackground from '@/components/DefaultBackground.vue';
 import DefaultButton from '@/components/DefaultButton.vue';
+import { de } from 'date-fns/locale'
 
 export default defineComponent({
+  methods: {
+    de() {
+      return de
+    }, formatDate },
   components: { DefaultButton, DefaultBackground },
   setup() {
     type Task = { id: number; title: string; details: string; deadline: Date; completed: boolean }
@@ -20,6 +25,12 @@ export default defineComponent({
 
     const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
+
+
+    const deadlineDate = computed(() => {
+      return deadlineField.value ? new Date(deadlineField.value) : null;
+    });
+
     function createTask(): void {
       const task = {
         title: titleField.value,
@@ -31,7 +42,7 @@ export default defineComponent({
       console.log('Creating task:', task);
 
       axios
-        .post<Task>(`${url}/tasks`, task)
+        .post<Task>(`${url}/tasks/create`, task)
         .then((response) => {
           console.log('Task created:', response.data);
           tasks.value.push(response.data);
@@ -43,7 +54,7 @@ export default defineComponent({
 
     function requestTasks(): void {
       axios
-        .get<Task[]>(`${url}/tasks`)
+        .get<Task[]>(`${url}/tasks/load`)
         .then((response) => {
           tasks.value = response.data.map(task => {
             task.deadline = new Date(task.deadline);
@@ -58,7 +69,7 @@ export default defineComponent({
 
     function removeTask(id: number): void {
       axios
-        .delete<void>(`${url}/tasks/${id}`)
+        .delete<void>(`${url}/tasks/${id}/delete`)
         .then(() => {
           tasks.value = tasks.value.filter((t) => t.id !== id);
           console.log('Task removed:', id);
@@ -85,6 +96,7 @@ export default defineComponent({
         });
     }
 
+    // auf put umzubauen
     function markAsUncompleted(id: number): void {
       axios
         .post<void>(`${url}/tasks/${id}/uncomplete`)
@@ -107,7 +119,7 @@ export default defineComponent({
       if (task) {
         titleField.value = task.title;
         detailsField.value = task.details;
-        deadlineField.value = format(task.deadline, 'dd-MM-yyyy');
+        deadlineField.value = format(task.deadline, 'yyyy-MM-dd');
         completedField.value = task.completed;
         editTaskId.value = id;
         editMode.value = true;
@@ -125,7 +137,7 @@ export default defineComponent({
       }
 
       axios
-        .put<Task>(`${url}/tasks/${editTaskId.value}`, task)
+        .put<Task>(`${url}/tasks/${editTaskId.value}/update`, task)
         .then((response) => {
           tasks.value = tasks.value.map(t => {
             if (t.id === editTaskId.value) {
@@ -150,10 +162,6 @@ export default defineComponent({
       editTaskId.value = null;
     }
 
-    function formatDate(date: Date): string {
-      return format(date, 'dd.MM.yy');
-    }
-
     onMounted(() => {
       console.log('Component mounted, fetching tasks');
       requestTasks();
@@ -175,18 +183,22 @@ export default defineComponent({
       editTask,
       updateTask,
       resetForm,
-      formatDate,
+      deadlineDate
     }
   },
 })
 </script>
+
 
 <template>
   <DefaultBackground>
     <h2 style="color: black">Task Manager</h2>
     <form @submit.prevent="editMode ? updateTask() : createTask()">
       <input type="text" placeholder="Enter the Title..." v-model="titleField" />
-      <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
+      <div>
+        <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
+        <p>{{ deadlineDate }}</p>
+      </div>
       <DefaultButton :disabled="!titleField || !deadlineField">
         {{ editMode ? 'Update Task' : 'Add Task' }}
       </DefaultButton>
@@ -208,8 +220,8 @@ export default defineComponent({
         <td colspan="4">No tasks added so far!</td>
       </tr>
       <tr v-for="task in tasks" :key="task.id">
-        <td>{{ task.title }}</td>
-        <td>{{ formatDate(task.deadline) }}</td>
+        <td>{{ task.title }}</td>`
+        <td>{{ formatDate(task.deadline, 'dd mmm yy', { locale: de() }) }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
           <div class="action-buttons">
@@ -228,6 +240,8 @@ export default defineComponent({
     </table>
   </DefaultBackground>
 </template>
+
+
 
 <style scoped>
 form {
@@ -264,3 +278,4 @@ button {
   gap: 0.5rem;
 }
 </style>
+
