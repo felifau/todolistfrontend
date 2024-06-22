@@ -75,7 +75,7 @@ export default defineComponent({
     const tasks: Ref<Task[]> = ref([]);
     const titleField = ref('');
     const detailsField = ref('');
-    const deadlineField = ref('');
+    const deadlineField = ref();
     const completedField = ref(false);
     const editMode = ref(false);
     const editTaskId = ref<number | null>(null);
