@@ -33,6 +33,7 @@ interface Task {
   details: string;
   deadline: Date;
   completed: boolean;
+  marked: boolean;
 }
 
 export default defineComponent({

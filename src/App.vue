@@ -67,6 +67,7 @@ interface Task {
   details: string;
   deadline: Date;
   completed: boolean;
+  marked: boolean;
 }
 
 export default defineComponent({
@@ -77,6 +78,7 @@ export default defineComponent({
     const detailsField = ref('');
     const deadlineField = ref();
     const completedField = ref(false);
+    const markedField = ref(false);
     const editMode = ref(false);
     const editTaskId = ref<number | null>(null);
     const showModal = ref(false);
@@ -90,6 +92,7 @@ export default defineComponent({
         deadline: deadlineField.value,
         details: detailsField.value,
         completed: completedField.value,
+        marked: markedField.value,
       };
 
       axios
@@ -128,6 +131,7 @@ export default defineComponent({
         });
     }
 
+    // completed and uncompleted requests
     function markAsCompleted(id: number): void {
       axios
         .post<void>(`${url}/tasks/${id}/complete`)
@@ -160,6 +164,39 @@ export default defineComponent({
         });
     }
 
+
+    function markTask(id: number): void {
+      axios
+        .put<void>(`${url}/tasks/${id}/mark`)
+        .then(() => {
+          tasks.value = tasks.value.map((t) => {
+            if (t.id === id) {
+              t.marked = true;
+            }
+            return t;
+          });
+        })
+        .catch((error) => {
+          console.error('Error marking task as completed:', error);
+        });
+    }
+
+    function unmarkTask(id: number): void {
+      axios
+        .put<void>(`${url}/tasks/${id}/unmark`)
+        .then(() => {
+          tasks.value = tasks.value.map((t) => {
+            if (t.id === id) {
+              t.completed = false;
+            }
+            return t;
+          });
+        })
+        .catch((error) => {
+          console.error('Error marking task as uncompleted:', error);
+        });
+    }
+
     function editTask(id: number): void {
       const task = tasks.value.find((t) => t.id === id);
       if (task) {
@@ -176,6 +213,7 @@ export default defineComponent({
           details: detailsField.value,
           deadline: deadlineField.value,
           completed: completedField.value,
+          marked: markedField.value
         };
 
         axios
@@ -250,6 +288,8 @@ export default defineComponent({
       handleUpdateTask,
       closeModal,
       resetForm,
+      markTask,
+      unmarkTask,
     };
   },
 });
