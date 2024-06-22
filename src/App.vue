@@ -305,8 +305,7 @@ export default defineComponent({
       handleUpdateTask,
       closeModal,
       resetForm,
-      markTask,
-      unmarkTask,
+      toggleMarkTask
     };
   },
 });
