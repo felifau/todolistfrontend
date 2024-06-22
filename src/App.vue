@@ -171,6 +171,16 @@ export default defineComponent({
         });
     }
 
+    function toggleMarkTask(id: number): void {
+      const task = tasks.value.find((t) => t.id === id);
+      if (task) {
+        if (task.marked) {
+          unmarkTask(task.id);
+        } else {
+          markTask(task.id);
+        }
+      }
+    }
 
     function markTask(id: number): void {
       axios
