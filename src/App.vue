@@ -26,7 +26,7 @@
       </tr>
       <tr v-for="task in tasks" :key="task.id">
         <td>{{ task.title }}</td>
-        <td>{{ task.deadline }}</td>
+        <td>{{ format(task.deadline, 'dd MMM yy') }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
           <div class="action-buttons">
@@ -71,6 +71,7 @@ interface Task {
 }
 
 export default defineComponent({
+  methods: { format },
   components: { DefaultButton, DefaultBackground, EditTaskModal },
   setup() {
     const tasks: Ref<Task[]> = ref([]);
