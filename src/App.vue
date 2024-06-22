@@ -28,7 +28,6 @@
         <td>{{ task.title }}</td>
         <td>{{ format(task.deadline, 'dd MMM yy') }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
-        <td>{{ task.marked ? 'Yes' : 'No' }}</td>
         <td>
           <div class="action-buttons">
             <DefaultButton @click="editTask(task.id)">Edit Task</DefaultButton>
@@ -39,11 +38,11 @@
             <DefaultButton v-else @click="markAsUncompleted(task.id)">
               Mark Uncompleted
             </DefaultButton>
-            <button v-if="!task.marked" @click="markTask(task.id)" class="btn btn-danger">
-              <i class="bi bi-star"></i> Mark
-            </button>
-            <button v-else @click="unmarkTask(task.id)" class="btn btn-secondary">
-              <i class="bi bi-star-fill"></i> Unmark
+            <button
+              :class="['btn', task.marked ? 'btn-danger' : 'btn-secondary']"
+              @click="toggleMarkTask(task.id)"
+            >
+              <i :class="task.marked ? 'bi bi-star-fill' : 'bi bi-star'"></i>
             </button>
           </div>
         </td>
