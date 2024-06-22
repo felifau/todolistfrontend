@@ -65,7 +65,7 @@ interface Task {
   id: number;
   title: string;
   details: string;
-  deadline: string; // keep as string to simplify v-model binding
+  deadline: Date;
   completed: boolean;
 }
 
@@ -108,7 +108,7 @@ export default defineComponent({
         .get<Task[]>(`${url}/tasks`)
         .then((response) => {
           tasks.value = response.data.map((task) => {
-            task.deadline = format(new Date(task.deadline), 'yyyy-MM-dd');
+            task.deadline = new Date(task.deadline);
             return task;
           });
         })
