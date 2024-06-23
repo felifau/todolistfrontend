@@ -26,28 +26,27 @@
       </tr>
       <tr v-for="task in tasks" :key="task.id">
         <td>{{ task.title }}</td>
-        <td>{{ task.deadline ? format(task.deadline, 'dd MMM yy') : 'No deadline' }}</td>
+        <td>{{ format(task.deadline, 'dd MMM yy') }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
-          <div class="action-buttons">
-            <DefaultButton @click="editTask(task.id)">
-              <i class="bi bi-pen"></i>
-            </DefaultButton>
-            <DefaultButton @click="removeTask(task.id)">
-              <i class="bi bi-trash"></i>
-            </DefaultButton>
-            <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)">
-              <i class="bi bi-check"></i>
-            </DefaultButton>
-            <DefaultButton v-else @click="markAsUncompleted(task.id)">
-              Mark Uncompleted
-            </DefaultButton>
-            <button
-              :class="['btn', task.marked ? 'btn-danger' : 'btn-secondary']"
-              @click="toggleMarkTask(task.id)"
-            >
-              <i :class="task.marked ? 'bi bi-star-fill' : 'bi bi-star'"></i>
-            </button>
+            <div class="action-buttons">
+              <DefaultButton @click="editTask(task.id)">
+                <i class="bi bi-pen"></i>
+              </DefaultButton>
+              <DefaultButton @click="removeTask(task.id)">
+                <i class="bi bi-trash"></i>
+              </DefaultButton>
+              <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)">
+                <i class="bi bi-check"></i>
+              </DefaultButton>
+              <DefaultButton v-else @click="markAsUncompleted(task.id)">
+                Mark Uncompleted
+              </DefaultButton>
+              <button
+                :class="['btn', task.marked ? 'btn-danger' : 'btn-secondary']"
+                @click="toggleMarkTask(task.id)">
+                <i :class="task.marked ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+              </button>
           </div>
         </td>
       </tr>
@@ -100,7 +99,7 @@ export default defineComponent({
     function createTask(): void {
       const task = {
         title: titleField.value,
-        deadline: deadlineField.value ? new Date(deadlineField.value) : null,
+        deadline: deadlineField.value,
         details: detailsField.value,
         completed: completedField.value,
         marked: markedField.value,
@@ -122,15 +121,7 @@ export default defineComponent({
         .get<Task[]>(`${url}/tasks`)
         .then((response) => {
           tasks.value = response.data.map((task) => {
-
-            // validates and checks the date from server
-            const parsedDate = new Date(task.deadline);
-            if (isNaN(parsedDate.getTime())) {
-              console.error(`Invalid date value for task ID ${task.id}`);
-            } else {
-              task.deadline = parsedDate;
-            }
-
+            task.deadline = new Date(task.deadline);
             return task;
           });
         })
@@ -317,7 +308,7 @@ export default defineComponent({
       handleUpdateTask,
       closeModal,
       resetForm,
-      toggleMarkTask
+      toggleMarkTask,
     };
   },
 });
