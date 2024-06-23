@@ -26,7 +26,7 @@
       </tr>
       <tr v-for="task in tasks" :key="task.id">
         <td>{{ task.title }}</td>
-        <td>{{ format(task.deadline, 'dd MMM yy') }}</td>
+        <td>{{ task.deadline ? format(task.deadline, 'dd MMM yy') : 'No deadline' }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
           <div class="action-buttons">
@@ -100,7 +100,7 @@ export default defineComponent({
     function createTask(): void {
       const task = {
         title: titleField.value,
-        deadline: deadlineField.value,
+        deadline: deadlineField.value ? new Date(deadlineField.value) : null,
         details: detailsField.value,
         completed: completedField.value,
         marked: markedField.value,
@@ -122,7 +122,15 @@ export default defineComponent({
         .get<Task[]>(`${url}/tasks`)
         .then((response) => {
           tasks.value = response.data.map((task) => {
-            task.deadline = new Date(task.deadline);
+
+            // validates and checks the date from server
+            const parsedDate = new Date(task.deadline);
+            if (isNaN(parsedDate.getTime())) {
+              console.error(`Invalid date value for task ID ${task.id}`);
+            } else {
+              task.deadline = parsedDate;
+            }
+
             return task;
           });
         })
