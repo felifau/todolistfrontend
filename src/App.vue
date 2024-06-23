@@ -11,6 +11,15 @@
         Cancel Edit
       </DefaultButton>
     </form>
+
+    <div>
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" v-for="list in lists" :key="list.id">
+          <button class="nav-link" @click="loadTasks(list.id)">{{ list.name }}</button>
+        </li>
+      </ul>
+    </div>
+
     <table>
       <thead>
       <tr>
@@ -29,24 +38,24 @@
         <td>{{ task.deadline }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
-            <div class="action-buttons">
-              <DefaultButton @click="editTask(task.id)">
-                <i class="bi bi-pen"></i>
-              </DefaultButton>
-              <DefaultButton @click="removeTask(task.id)">
-                <i class="bi bi-trash"></i>
-              </DefaultButton>
-              <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)">
-                <i class="bi bi-check"></i>
-              </DefaultButton>
-              <DefaultButton v-else @click="markAsUncompleted(task.id)">
-                Mark Uncompleted
-              </DefaultButton>
-              <button
-                :class="['btn', task.marked ? 'btn-danger' : 'btn-secondary']"
-                @click="toggleMarkTask(task.id)">
-                <i :class="task.marked ? 'bi bi-star-fill' : 'bi bi-star'"></i>
-              </button>
+          <div class="action-buttons">
+            <DefaultButton @click="editTask(task.id)">
+              <i class="bi bi-pen"></i>
+            </DefaultButton>
+            <DefaultButton @click="removeTask(task.id)">
+              <i class="bi bi-trash"></i>
+            </DefaultButton>
+            <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)">
+              <i class="bi bi-check"></i>
+            </DefaultButton>
+            <DefaultButton v-else @click="markAsUncompleted(task.id)">
+              Mark Uncompleted
+            </DefaultButton>
+            <button
+              :class="['btn', task.marked ? 'btn-danger' : 'btn-secondary']"
+              @click="toggleMarkTask(task.id)">
+              <i :class="task.marked ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+            </button>
           </div>
         </td>
       </tr>
@@ -79,6 +88,11 @@ interface Task {
   marked: boolean;
 }
 
+interface ListOfTasks {
+  id: number;
+  name: string;
+}
+
 export default defineComponent({
   methods: { format },
   components: { DefaultButton, DefaultBackground, EditTaskModal },
@@ -93,6 +107,7 @@ export default defineComponent({
     const editTaskId = ref<number | null>(null);
     const showModal = ref(false);
     const currentTask = ref<Task | null>(null);
+    const lists: Ref<ListOfTasks[]> = ref([]);
 
     const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
@@ -113,6 +128,20 @@ export default defineComponent({
         })
         .catch((error) => {
           console.error('Error creating task:', error);
+        });
+    }
+
+    function loadTasks(listId: number): void {
+      axios
+        .get<Task[]>(`${url}/tasks/${listId}/getListOfTasks`)
+        .then((response) => {
+          tasks.value = response.data.map((task) => {
+            task.deadline = new Date(task.deadline);
+            return task;
+          });
+        })
+        .catch((error) => {
+          console.error(`Error loading tasks for list ${listId}:`, error);
         });
     }
 
@@ -290,6 +319,7 @@ export default defineComponent({
 
     return {
       tasks,
+      lists,
       titleField,
       detailsField,
       deadlineField,
@@ -309,6 +339,7 @@ export default defineComponent({
       closeModal,
       resetForm,
       toggleMarkTask,
+      loadTasks,
     };
   },
 });
