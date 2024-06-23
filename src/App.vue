@@ -30,10 +30,14 @@
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
           <div class="action-buttons">
-            <DefaultButton @click="editTask(task.id)">Edit Task</DefaultButton>
-            <DefaultButton @click="removeTask(task.id)">Delete Task</DefaultButton>
+            <DefaultButton @click="editTask(task.id)">
+              <i class="bi bi-pen"></i>
+            </DefaultButton>
+            <DefaultButton @click="removeTask(task.id)">
+              <i class="bi bi-trash"></i>
+            </DefaultButton>
             <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)">
-              Mark Completed
+              <i class="bi bi-check"></i>
             </DefaultButton>
             <DefaultButton v-else @click="markAsUncompleted(task.id)">
               Mark Uncompleted
