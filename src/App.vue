@@ -26,7 +26,7 @@
       </tr>
       <tr v-for="task in tasks" :key="task.id">
         <td>{{ task.title }}</td>
-        <td>{{ format(task.deadline, 'dd MMM yy') }}</td>
+        <td>{{ task.deadline }}</td>
         <td>{{ task.completed ? 'Yes' : 'No' }}</td>
         <td>
             <div class="action-buttons">
