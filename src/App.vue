@@ -13,8 +13,8 @@
       <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" v-for="list in lists" :key="list.id">
           <button class="nav-link" @click="loadTasks(list.id)"
-                  style="font-size: 4.0em; color: gray; border: 5px solid gray;">
-            <span style="font-size: 16px; color: blue;">{{ list.title }}</span>
+                  style="font-size: 1.6em; color: gray; border: 1px solid gray; padding: 10px;">
+            <span style="font-size: 12px; color: darkgrey;">{{ list.title }}</span>
           </button>
         </li>
       </ul>
