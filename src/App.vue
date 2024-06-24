@@ -14,7 +14,7 @@
         <li class="nav-item" v-for="list in lists" :key="list.id">
           <button class="nav-link" @click="loadTasks(list.id)"
                   style="font-size: 4.0em; color: gray; border: 5px solid gray;">
-            {{ list.name }}
+            <span style="font-size: 16px; color: blue;">{{ list.name }}</span>
           </button>
         </li>
       </ul>
