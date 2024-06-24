@@ -15,7 +15,9 @@
     <div>
       <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" v-for="list in lists" :key="list.id">
-          <button class="nav-link" @click="loadTasks(list.id)">{{ list.name }}</button>
+          <button class="nav-link nav-link-custom" @click="loadTasks(list.id)">
+            {{ list.name }}
+          </button>
         </li>
       </ul>
     </div>

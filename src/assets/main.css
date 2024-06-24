@@ -40,3 +40,15 @@ a,
     padding: 0 2rem;
   }
 }
+
+.nav-link-custom {
+  font-size: 1.2em;
+  color: gray;
+  border: 2px solid gray;
+  background-color: transparent;
+}
+
+.nav-link-custom:hover {
+  color: darkgray;
+  border-color: darkgray;
+}
