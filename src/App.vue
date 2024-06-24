@@ -7,9 +7,6 @@
       <DefaultButton :disabled="!titleField || !deadlineField">
         {{ editMode ? 'Update Task' : 'Add Task' }}
       </DefaultButton>
-      <DefaultButton v-if="editMode" type="button" @click="resetForm">
-        Cancel Edit
-      </DefaultButton>
     </form>
 
     <div>
@@ -89,6 +86,7 @@ interface Task {
   deadline: Date;
   completed: boolean;
   marked: boolean;
+  listOfTasksId: number;
 }
 
 interface ListOfTasks {
@@ -111,6 +109,7 @@ export default defineComponent({
     const showModal = ref(false);
     const currentTask = ref<Task | null>(null);
     const lists: Ref<ListOfTasks[]> = ref([]);
+    const currentListOfTasks = ref<number | null>(null);
 
     const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
@@ -121,6 +120,7 @@ export default defineComponent({
         details: detailsField.value,
         completed: completedField.value,
         marked: markedField.value,
+        listOfTasksId: currentListOfTasks.value,
       };
 
       axios
@@ -151,6 +151,7 @@ export default defineComponent({
     }
 
     function loadTasks(listId: number): void {
+      currentListOfTasks.value = listId;
       axios
         .get<Task[]>(`${url}/tasks/${listId}/getListOfTasks`)
         .then((response) => {
