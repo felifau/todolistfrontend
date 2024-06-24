@@ -11,10 +11,10 @@
 
     <div>
       <ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item" v-for="list in lists" :key="list.id" :class="'list-' + list.id">
+        <li class="nav-item" v-for="list in lists" :key="list.id">
           <button class="nav-link" @click="loadTasks(list.id)"
                   style="font-size: 4.0em; color: gray; border: 5px solid gray;">
-            <span style="font-size: 16px; color: blue;">{{ list.name }}</span>
+            <span style="font-size: 16px; color: blue;">{{ list.title }}</span>
           </button>
         </li>
       </ul>
@@ -91,7 +91,7 @@ interface Task {
 
 interface ListOfTasks {
   id: number;
-  name: string;
+  title: string;
 }
 
 export default defineComponent({
