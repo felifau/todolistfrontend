@@ -15,7 +15,8 @@
     <div>
       <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" v-for="list in lists" :key="list.id">
-          <button class="nav-link nav-link-custom" @click="loadTasks(list.id)">
+          <button class="nav-link" @click="loadTasks(list.id)"
+                  style="font-size: 4.0em; color: gray; border: 5px solid gray;">
             {{ list.name }}
           </button>
         </li>
