@@ -131,6 +131,22 @@ export default defineComponent({
         });
     }
 
+    function createListOfTasks(): void {
+      const listOfTasks = {
+        title: titleField.value
+      };
+
+      axios
+        .post<ListOfTasks>(`${url}/lists`, listOfTasks)
+        .then((response) => {
+          lists.value.push(response.data);
+          resetForm();
+        })
+        .catch((error) => {
+          console.error('Error creating list of Tasks:', error);
+        });
+    }
+
     function loadTasks(listId: number): void {
       axios
         .get<Task[]>(`${url}/tasks/${listId}/getListOfTasks`)
@@ -152,6 +168,19 @@ export default defineComponent({
           tasks.value = response.data.map((task) => {
             task.deadline = new Date(task.deadline);
             return task;
+          });
+        })
+        .catch((error) => {
+          console.error('Error fetching tasks:', error);
+        });
+    }
+
+    function requestListsOfTasks(): void {
+      axios
+        .get<ListOfTasks[]>(`${url}/lists`)
+        .then((response) => {
+          lists.value = response.data.map((ListOfTasks) => {
+            return ListOfTasks;
           });
         })
         .catch((error) => {
@@ -315,6 +344,7 @@ export default defineComponent({
 
     onMounted(() => {
       requestTasks();
+      requestListsOfTasks();
     });
 
     return {
