@@ -31,48 +31,15 @@
               {{ 'Add Task' }}
             </DefaultButton>
           </form>
-
-          <table v-show="index === activeTab">
-            <thead>
-            <tr>
-              <th>Title</th>
-              <th>Deadline</th>
-              <th>Completed?</th>
-              <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-if="filteredTasks.length === 0">
-              <td colspan="4">No tasks added so far!</td>
-            </tr>
-            <tr v-for="task in filteredTasks" :key="task.id">
-              <td>{{ task.title }}</td>
-              <td>{{ task.deadline }}</td>
-              <td>{{ task.completed ? 'Yes' : 'No' }}</td>
-              <td>
-                <div class="action-buttons">
-                  <DefaultButton @click="editTask(task.id)" title="Edit your Task!">
-                    <i class="bi bi-pen"></i>
-                  </DefaultButton>
-                  <DefaultButton @click="removeTask(task.id)" title="Deletes your Task :<(">
-                    <i class="bi bi-trash"></i>
-                  </DefaultButton>
-                  <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)" title="Mark the task ad completed">
-                    <i class="bi bi-circle"></i>
-                  </DefaultButton>
-                  <DefaultButton v-else @click="markAsUncompleted(task.id)" title="Mark the task as uncompleted">
-                    <i class="bi bi-check"></i>
-                  </DefaultButton>
-                  <button
-                    :class="['btn', task.marked ? 'btn-danger' : 'btn-secondary']"
-                    @click="toggleMarkTask(task.id)">
-                    <i :class="task.marked ? 'bi bi-star-fill' : 'bi bi-star'"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            </tbody>
-          </table>
+          <TaskTable
+            :tasks="tasks"
+            :filteredTasks="filteredTasks"
+            @edit-task="editTask"
+            @remove-task="removeTask"
+            @mark-as-completed="markAsCompleted"
+            @mark-as-uncompleted="markAsUncompleted"
+            @toggle-mark-task="toggleMarkTask"
+          ></TaskTable>
         </div>
       </div>
     </div>
@@ -94,9 +61,11 @@ import type { ListOfTasks, Task } from '@/types/types'
 import DefaultButton from '@/components/DefaultButton.vue'
 import EditTaskModal from '@/components/EditTaskModal.vue'
 import DefaultBackground from '@/components/DefaultBackground.vue'
+import TaskTable from '@/components/Table.vue'
 
 export default defineComponent({
   components: {
+    TaskTable,
     DefaultBackground,
     EditTaskModal,
     DefaultButton,
@@ -158,8 +127,8 @@ export default defineComponent({
         title: 'Unbase',
       },
     ];
-    // tasks.value = mockTasks;
-    // lists.value = mockLists;
+    tasks.value = mockTasks;
+    lists.value = mockLists;
 
     const titleField = ref('');
     const detailsField = ref('');
@@ -175,15 +144,6 @@ export default defineComponent({
     const currentListOfTasks = ref<number | null>(null);
     // default active Tab
     const activeTab = ref(1);
-
-    interface newTask{
-      title: string;
-      details: string;
-      deadline: Date;
-      completed: boolean;
-      marked: boolean;
-      listOfTasksId: number;
-    }
 
     function setupTask(listId: number): void {
       const newTask = {
