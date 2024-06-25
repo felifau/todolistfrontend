@@ -28,13 +28,13 @@ export function useTaskController() {
 
     axios
       .post<Task>(`${url}/tasks`, task)
-        .then((response) => {
-          tasks.value.push(response.data);
-          resetForm();
-        })
-        .catch((error) => {
-          console.error('Error creating task:', error);
-        });
+      .then((response) => {
+        tasks.value.push(response.data);
+        resetForm();
+      })
+      .catch((error) => {
+        console.error('Error creating task:', error);
+      });
   }
 
   function loadTasks(listId: number): void {
