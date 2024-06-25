@@ -18,9 +18,9 @@
       <div class="tab-content">
         <div v-for="(list, index) in lists" :key="list.id" v-show="index === activeTab">
           <div style="margin-top: 10px; display: flex; align-items: center;">
-            <button @click="deleteList(list.id)" style="border: none; background: none; cursor: pointer;">
+            <DefaultButton @click="deleteList(list.id)" title="Deletes the list, all tasks will be reassigned to the Main list">
               <i class="bi bi-trash"></i>
-            </button>
+            </DefaultButton>
             <input v-model="list.title" type="text" style="margin-left: 10px; padding: 5px; font-size: 1em;" />
           </div>
 
@@ -51,16 +51,16 @@
               <td>{{ task.completed ? 'Yes' : 'No' }}</td>
               <td>
                 <div class="action-buttons">
-                  <DefaultButton @click="editTask(task.id)">
+                  <DefaultButton @click="editTask(task.id)" title="Edit your Task!">
                     <i class="bi bi-pen"></i>
                   </DefaultButton>
-                  <DefaultButton @click="removeTask(task.id)">
+                  <DefaultButton @click="removeTask(task.id)" title="Deletes your Task :<(">
                     <i class="bi bi-trash"></i>
                   </DefaultButton>
-                  <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)">
+                  <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)" title="Mark the task ad completed">
                     <i class="bi bi-circle"></i>
                   </DefaultButton>
-                  <DefaultButton v-else @click="markAsUncompleted(task.id)">
+                  <DefaultButton v-else @click="markAsUncompleted(task.id)" title="Mark the task as uncompleted">
                     <i class="bi bi-check"></i>
                   </DefaultButton>
                   <button
