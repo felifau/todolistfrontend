@@ -4,9 +4,11 @@ export interface Task {
   details: string;
   deadline: Date;
   completed: boolean;
+  marked: boolean;
+  listOfTasksId: number;
 }
 
 export interface ListOfTasks {
   id: number;
-  name: string;
+  title: string;
 }

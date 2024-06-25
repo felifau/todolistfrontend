@@ -1,66 +1,81 @@
 <template>
   <DefaultBackground>
     <h2 style="color: black">Task Manager</h2>
-    <form @submit.prevent="editMode ? updateTask() : createTask()">
-      <input type="text" placeholder="Enter the Title..." v-model="titleField" />
-      <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
-      <DefaultButton :disabled="!titleField || !deadlineField">
-        {{ editMode ? 'Update Task' : 'Add Task' }}
-      </DefaultButton>
-    </form>
 
     <div>
       <ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item" v-for="list in lists" :key="list.id">
-          <button class="nav-link" @click="loadTasks(list.id)"
+        <li class="nav-item" v-for="(list, index) in lists" :key="list.id">
+          <button class="nav-link"
+                  :class="{ 'active': index === activeTab }"
+                  @click="activeTab = index"
+                  :aria-labelledby="'tab-' + index"
                   style="font-size: 1.6em; color: gray; border: 1px solid gray; padding: 10px;">
             <span style="font-size: 12px; color: darkgrey;">{{ list.title }}</span>
           </button>
         </li>
       </ul>
-    </div>
 
-    <table>
-      <thead>
-      <tr>
-        <th>Title</th>
-        <th>Deadline</th>
-        <th>Completed?</th>
-        <th>Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-if="!tasks.length">
-        <td colspan="4">No tasks added so far!</td>
-      </tr>
-      <tr v-for="task in tasks" :key="task.id">
-        <td>{{ task.title }}</td>
-        <td>{{ task.deadline }}</td>
-        <td>{{ task.completed ? 'Yes' : 'No' }}</td>
-        <td>
-          <div class="action-buttons">
-            <DefaultButton @click="editTask(task.id)">
-              <i class="bi bi-pen"></i>
-            </DefaultButton>
-            <DefaultButton @click="removeTask(task.id)">
+      <div class="tab-content">
+        <div v-for="(list, index) in lists" :key="list.id" v-show="index === activeTab">
+          <div style="margin-top: 10px; display: flex; align-items: center;">
+            <button @click="deleteList(list.id)" style="border: none; background: none; cursor: pointer;">
               <i class="bi bi-trash"></i>
-            </DefaultButton>
-            <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)">
-              <i class="bi bi-check"></i>
-            </DefaultButton>
-            <DefaultButton v-else @click="markAsUncompleted(task.id)">
-              Mark Uncompleted
-            </DefaultButton>
-            <button
-              :class="['btn', task.marked ? 'btn-danger' : 'btn-secondary']"
-              @click="toggleMarkTask(task.id)">
-              <i :class="task.marked ? 'bi bi-star-fill' : 'bi bi-star'"></i>
             </button>
+            <input v-model="list.title" type="text" style="margin-left: 10px; padding: 5px; font-size: 1em;" />
           </div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+
+          <form @submit.prevent="createTask(list.id)">
+            <input type="text" placeholder="Enter the Title..." v-model="titleField" />
+            <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
+            <DefaultButton :disabled="!titleField || !deadlineField">
+              {{ 'Add Task' }}
+            </DefaultButton>
+          </form>
+
+          <table v-show="index === activeTab">
+            <thead>
+            <tr>
+              <th>Title</th>
+              <th>Deadline</th>
+              <th>Completed?</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-if="filteredTasks.length === 0">
+              <td colspan="4">No tasks added so far!</td>
+            </tr>
+            <tr v-for="task in filteredTasks" :key="task.id">
+              <td>{{ task.title }}</td>
+              <td>{{ task.deadline }}</td>
+              <td>{{ task.completed ? 'Yes' : 'No' }}</td>
+              <td>
+                <div class="action-buttons">
+                  <DefaultButton @click="editTask(task.id)">
+                    <i class="bi bi-pen"></i>
+                  </DefaultButton>
+                  <DefaultButton @click="removeTask(task.id)">
+                    <i class="bi bi-trash"></i>
+                  </DefaultButton>
+                  <DefaultButton v-if="!task.completed" @click="markAsCompleted(task.id)">
+                    <i class="bi bi-circle"></i>
+                  </DefaultButton>
+                  <DefaultButton v-else @click="markAsUncompleted(task.id)">
+                    <i class="bi bi-check"></i>
+                  </DefaultButton>
+                  <button
+                    :class="['btn', task.marked ? 'btn-danger' : 'btn-secondary']"
+                    @click="toggleMarkTask(task.id)">
+                    <i :class="task.marked ? 'bi bi-star-fill' : 'bi bi-star'"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
     <EditTaskModal
       v-if="showModal && currentTask"
@@ -72,33 +87,81 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, type Ref } from 'vue';
-import axios from 'axios';
-import { format } from 'date-fns';
-import DefaultBackground from '@/components/DefaultBackground.vue';
-import DefaultButton from '@/components/DefaultButton.vue';
-import EditTaskModal from '@/components/EditTaskModal.vue';
-
-interface Task {
-  id: number;
-  title: string;
-  details: string;
-  deadline: Date;
-  completed: boolean;
-  marked: boolean;
-  listOfTasksId: number;
-}
-
-interface ListOfTasks {
-  id: number;
-  title: string;
-}
+import { computed, defineComponent, onMounted, ref } from 'vue'
+import { useTaskController } from '@/types/TaskMixin';
+import { useListOfTasksController } from '@/types/ListOfTasksMixin';
+import type { ListOfTasks, Task } from '@/types/types'
+import DefaultButton from '@/components/DefaultButton.vue'
+import EditTaskModal from '@/components/EditTaskModal.vue'
+import DefaultBackground from '@/components/DefaultBackground.vue'
 
 export default defineComponent({
-  methods: { format },
-  components: { DefaultButton, DefaultBackground, EditTaskModal },
+  components: {
+    DefaultBackground,
+    EditTaskModal,
+    DefaultButton,
+  },
+
+  // import from @/types
   setup() {
-    const tasks: Ref<Task[]> = ref([]);
+    const {
+      tasks,
+      createTask,
+      loadTasks,
+      requestTasks,
+      removeTask,
+      markAsCompleted,
+      markAsUncompleted,
+      toggleMarkTask,
+      updateTask,
+    } = useTaskController();
+
+    const {
+      lists,
+      createListOfTasks,
+      requestListsOfTasks,
+      deleteList,
+      updateList,
+    } = useListOfTasksController();
+
+
+    // mosks for Testing
+    const mockTasks: Task[] = [
+      {
+        id: 1,
+        title: 'Task 1',
+        details: 'Desc of T1',
+        deadline: new Date('2024-07-01'),
+        completed: false,
+        marked: false,
+        listOfTasksId: 1,
+      },
+      {
+        id: 2,
+        title: 'Task 2',
+        details: 'Desc of T2',
+        deadline: new Date('2024-07-02'),
+        completed: false,
+        marked: false,
+        listOfTasksId: 2,
+      },
+    ];
+
+    // Моки данных для списков задач
+    const mockLists: ListOfTasks[] = [
+      {
+        id: 1,
+        title: 'Base',
+      },
+      {
+        id: 2,
+        title: 'Unbase',
+      },
+    ];
+
+    tasks.value = mockTasks;
+    lists.value = mockLists;
+
     const titleField = ref('');
     const detailsField = ref('');
     const deadlineField = ref();
@@ -108,176 +171,9 @@ export default defineComponent({
     const editTaskId = ref<number | null>(null);
     const showModal = ref(false);
     const currentTask = ref<Task | null>(null);
-    const lists: Ref<ListOfTasks[]> = ref([]);
     const currentListOfTasks = ref<number | null>(null);
-
-    const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
-
-    function createTask(): void {
-      const task = {
-        title: titleField.value,
-        deadline: deadlineField.value,
-        details: detailsField.value,
-        completed: completedField.value,
-        marked: markedField.value,
-        listOfTasksId: currentListOfTasks.value,
-      };
-
-      axios
-        .post<Task>(`${url}/tasks`, task)
-        .then((response) => {
-          tasks.value.push(response.data);
-          resetForm();
-        })
-        .catch((error) => {
-          console.error('Error creating task:', error);
-        });
-    }
-
-    function createListOfTasks(): void {
-      const listOfTasks = {
-        title: titleField.value
-      };
-
-      axios
-        .post<ListOfTasks>(`${url}/lists`, listOfTasks)
-        .then((response) => {
-          lists.value.push(response.data);
-          resetForm();
-        })
-        .catch((error) => {
-          console.error('Error creating list of Tasks:', error);
-        });
-    }
-
-    function loadTasks(listId: number): void {
-      currentListOfTasks.value = listId;
-      axios
-        .get<Task[]>(`${url}/tasks/${listId}/getListOfTasks`)
-        .then((response) => {
-          tasks.value = response.data.map((task) => {
-            task.deadline = new Date(task.deadline);
-            return task;
-          });
-        })
-        .catch((error) => {
-          console.error(`Error loading tasks for list ${listId}:`, error);
-        });
-    }
-
-    function requestTasks(): void {
-      axios
-        .get<Task[]>(`${url}/tasks`)
-        .then((response) => {
-          tasks.value = response.data.map((task) => {
-            task.deadline = new Date(task.deadline);
-            return task;
-          });
-        })
-        .catch((error) => {
-          console.error('Error fetching tasks:', error);
-        });
-    }
-
-    function requestListsOfTasks(): void {
-      axios
-        .get<ListOfTasks[]>(`${url}/lists`)
-        .then((response) => {
-          lists.value = response.data.map((ListOfTasks) => {
-            return ListOfTasks;
-          });
-        })
-        .catch((error) => {
-          console.error('Error fetching tasks:', error);
-        });
-    }
-
-    function removeTask(id: number): void {
-      axios
-        .delete<void>(`${url}/tasks/${id}`)
-        .then(() => {
-          tasks.value = tasks.value.filter((t) => t.id !== id);
-        })
-        .catch((error) => {
-          console.error('Error deleting task:', error);
-        });
-    }
-
-    // completed and uncompleted requests
-    function markAsCompleted(id: number): void {
-      axios
-        .post<void>(`${url}/tasks/${id}/complete`)
-        .then(() => {
-          tasks.value = tasks.value.map((t) => {
-            if (t.id === id) {
-              t.completed = true;
-            }
-            return t;
-          });
-        })
-        .catch((error) => {
-          console.error('Error marking task as completed:', error);
-        });
-    }
-
-    function markAsUncompleted(id: number): void {
-      axios
-        .post<void>(`${url}/tasks/${id}/uncomplete`)
-        .then(() => {
-          tasks.value = tasks.value.map((t) => {
-            if (t.id === id) {
-              t.completed = false;
-            }
-            return t;
-          });
-        })
-        .catch((error) => {
-          console.error('Error marking task as uncompleted:', error);
-        });
-    }
-
-    function toggleMarkTask(id: number): void {
-      const task = tasks.value.find((t) => t.id === id);
-      if (task) {
-        if (task.marked) {
-          unmarkTask(task.id);
-        } else {
-          markTask(task.id);
-        }
-      }
-    }
-
-    function markTask(id: number): void {
-      axios
-        .put<void>(`${url}/tasks/${id}/mark`)
-        .then(() => {
-          tasks.value = tasks.value.map((t) => {
-            if (t.id === id) {
-              t.marked = true;
-            }
-            return t;
-          });
-        })
-        .catch((error) => {
-          console.error('Error marking task as completed:', error);
-        });
-    }
-
-    function unmarkTask(id: number): void {
-      axios
-        .put<void>(`${url}/tasks/${id}/unmark`)
-        .then(() => {
-          tasks.value = tasks.value.map((t) => {
-            if (t.id === id) {
-              t.completed = false;
-            }
-            return t;
-          });
-        })
-        .catch((error) => {
-          console.error('Error marking task as uncompleted:', error);
-        });
-    }
+    // default active Tab
+    const activeTab = ref(1);
 
     function editTask(id: number): void {
       const task = tasks.value.find((t) => t.id === id);
@@ -287,49 +183,9 @@ export default defineComponent({
       }
     }
 
-    function updateTask(): void {
-      if (editTaskId.value !== null) {
-        const updatedTask = {
-          id: editTaskId.value,
-          title: titleField.value,
-          details: detailsField.value,
-          deadline: deadlineField.value,
-          completed: completedField.value,
-          marked: markedField.value
-        };
-
-        axios
-          .put<Task>(`${url}/tasks/${updatedTask.id}`, updatedTask)
-          .then((response) => {
-            tasks.value = tasks.value.map((t) => {
-              if (t.id === updatedTask.id) {
-                return response.data;
-              }
-              return t;
-            });
-            resetForm();
-          })
-          .catch((error) => {
-            console.error('Error updating task:', error);
-          });
-      }
-    }
-
     function handleUpdateTask(updatedTask: Task): void {
-      axios
-        .put<Task>(`${url}/tasks/${updatedTask.id}`, updatedTask)
-        .then((response) => {
-          tasks.value = tasks.value.map((t) => {
-            if (t.id === updatedTask.id) {
-              return response.data;
-            }
-            return t;
-          });
-          closeModal();
-        })
-        .catch((error) => {
-          console.error('Error updating task:', error);
-        });
+      updateTask(updatedTask);
+      closeModal();
     }
 
     function closeModal(): void {
@@ -337,14 +193,9 @@ export default defineComponent({
       currentTask.value = null;
     }
 
-    function resetForm(): void {
-      titleField.value = '';
-      detailsField.value = '';
-      deadlineField.value = '';
-      completedField.value = false;
-      editMode.value = false;
-      editTaskId.value = null;
-    }
+    const filteredTasks = computed(() => {
+      return tasks.value.filter(task => task.listOfTasksId === lists.value[activeTab.value].id);
+    });
 
     onMounted(() => {
       requestTasks();
@@ -352,28 +203,44 @@ export default defineComponent({
     });
 
     return {
+      // lists of classes
       tasks,
       lists,
+
+      // properties of Task class
       titleField,
       detailsField,
       deadlineField,
       completedField,
+
+      // functional variables for editing
       editMode,
       editTaskId,
       showModal,
       currentTask,
+      currentListOfTasks,
+      activeTab,
+
+      // functions for Task class
       createTask,
+      loadTasks,
+      editTask,
       removeTask,
-      requestTasks,
       markAsCompleted,
       markAsUncompleted,
-      editTask,
+      toggleMarkTask,
       updateTask,
+
+      // support functions for editing of Task class
       handleUpdateTask,
       closeModal,
-      resetForm,
-      toggleMarkTask,
-      loadTasks,
+      filteredTasks,
+
+      // functions for ListOfTasks class
+      createListOfTasks,
+      deleteList,
+      updateList,
+      requestTasks
     };
   },
 });
