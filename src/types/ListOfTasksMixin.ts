@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ref, type Ref } from 'vue';
-import type { ListOfTasks } from '@/types/types.ts';
+import type { ListOfTasks } from '@/types/types';
 
 const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
@@ -9,15 +9,19 @@ export function useListOfTasksController() {
 
   const titleField = ref('');
 
-  function createListOfTasks(list: Omit<ListOfTasks, 'id'>): void {
+  function createListOfTasks(): void {
+    const listOfTasks = {
+      title: titleField.value
+    };
+
     axios
-      .post<ListOfTasks>(`${url}/lists`, list)
+      .post<ListOfTasks>(`${url}/lists`, listOfTasks)
       .then((response) => {
         lists.value.push(response.data);
         resetForm();
       })
       .catch((error) => {
-        console.error('Error creating list of tasks:', error);
+        console.error('Error creating list of Tasks:', error);
       });
   }
 
