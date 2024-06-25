@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ref, type Ref } from 'vue';
 import { format } from 'date-fns';
-import type { Task } from '@/types/types';
+import type { NewTask, Task } from '@/types/types'
 
 const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
@@ -13,18 +13,9 @@ export function useTaskController() {
   const deadlineField = ref();
   const completedField = ref(false);
   const markedField = ref(false);
-  const listOfTasksId = ref();
 
   // addTask on Backend
-  function createTask(listId: number): void {
-    const task = {
-      title: titleField.value,
-      deadline: deadlineField.value,
-      details: detailsField.value,
-      completed: completedField.value,
-      marked: markedField.value,
-      listOfTasksId: listId,
-    };
+  function createTask(task: NewTask): void {
 
     axios
       .post<Task>(`${url}/tasks`, task)

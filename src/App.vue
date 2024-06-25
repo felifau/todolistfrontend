@@ -24,7 +24,7 @@
             <input v-model="list.title" type="text" style="margin-left: 10px; padding: 5px; font-size: 1em;" />
           </div>
 
-          <form @submit.prevent="createTask(list.id)">
+          <form @submit.prevent="setupTask(list.id)">
             <input type="text" placeholder="Enter the Title..." v-model="titleField" />
             <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
             <DefaultButton :disabled="!titleField || !deadlineField">
@@ -166,6 +166,8 @@ export default defineComponent({
     const deadlineField = ref();
     const completedField = ref(false);
     const markedField = ref(false);
+
+
     const editMode = ref(false);
     const editTaskId = ref<number | null>(null);
     const showModal = ref(false);
@@ -173,6 +175,28 @@ export default defineComponent({
     const currentListOfTasks = ref<number | null>(null);
     // default active Tab
     const activeTab = ref(1);
+
+    interface newTask{
+      title: string;
+      details: string;
+      deadline: Date;
+      completed: boolean;
+      marked: boolean;
+      listOfTasksId: number;
+    }
+
+    function setupTask(listId: number): void {
+      const newTask = {
+        title: titleField.value,
+        deadline: deadlineField.value,
+        details: detailsField.value,
+        completed: completedField.value,
+        marked: markedField.value,
+        listOfTasksId: listId,
+      };
+
+      createTask(newTask);
+    }
 
     function editTask(id: number): void {
       const task = tasks.value.find((t) => t.id === id);
@@ -234,6 +258,7 @@ export default defineComponent({
       handleUpdateTask,
       closeModal,
       filteredTasks,
+      setupTask,
 
       // functions for ListOfTasks class
       createListOfTasks,
