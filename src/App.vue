@@ -158,9 +158,8 @@ export default defineComponent({
         title: 'Unbase',
       },
     ];
-
-    tasks.value = mockTasks;
-    lists.value = mockLists;
+    // tasks.value = mockTasks;
+    // lists.value = mockLists;
 
     const titleField = ref('');
     const detailsField = ref('');
