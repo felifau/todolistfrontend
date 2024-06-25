@@ -27,7 +27,7 @@ export function useTaskController() {
     };
 
     axios
-      .post<Task>(`${url}/tasks/{id}/task`, task)
+      .post<Task>(`${url}/tasks/`, task)
         .then((response) => {
           tasks.value.push(response.data);
           resetForm();
