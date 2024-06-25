@@ -7,7 +7,7 @@ const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
 export function useTaskController() {
   const tasks: Ref<Task[]> = ref([]);
-  
+
   const titleField = ref('');
   const detailsField = ref('');
   const deadlineField = ref();
@@ -15,6 +15,7 @@ export function useTaskController() {
   const markedField = ref(false);
   const listOfTasksId = ref();
 
+  // addTask on Backend
   function createTask(listId: number): void {
     const task = {
       title: titleField.value,
@@ -26,7 +27,7 @@ export function useTaskController() {
     };
 
     axios
-      .post<Task>(`${url}/tasks/{id}/task`)
+      .post<Task>(`${url}/tasks/{id}/task`, task)
         .then((response) => {
           tasks.value.push(response.data);
           resetForm();
