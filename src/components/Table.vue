@@ -93,7 +93,7 @@ th,
 td {
   padding: 10px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 2px solid #FFFFFF;
 }
 
 .action-buttons {

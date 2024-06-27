@@ -6,9 +6,9 @@
 
 <style scoped>
 #background {
-  background: rgb(251,226,214);
-  background: radial-gradient(circle, rgba(251,226,214,1) 0%, rgba(254,202,177,1) 100%);
-  border-radius: 10px;
-  padding: 20px;
+  background: rgb(235,182,153);
+  background: linear-gradient(90deg, rgba(235,182,153,1) 0%, rgba(255,208,183,1) 50%, rgba(255,228,214,1) 100%);
+  border-radius: 30px;
+  padding: 100px;
 }
 </style>

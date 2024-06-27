@@ -25,8 +25,8 @@ export default defineComponent ({
 
 <style scoped>
 button {
-  border-radius: 10px;
-  padding: 8px;
+  border-radius: 20px;
+  padding: 15px;
   border: lemonchiffon;
   cursor: pointer;
   color: #333333;
@@ -37,7 +37,8 @@ button {
 }
 
 button:hover {
-  background-color: lemonchiffon;
+  background: rgb(249,207,178);
+  background: radial-gradient(circle, rgba(249,207,178,1) 0%, rgba(255,255,255,1) 100%);
   color: #333333;
 }
 
@@ -47,7 +48,8 @@ button:hover {
 button.disabled {
   border-radius: 10px;
   cursor: pointer;
-  background-color: #f2f2f2;
+  background: rgb(232,196,179);
+  background: radial-gradient(circle, rgba(232,196,179,1) 0%, rgba(255,255,255,1) 100%);
   color: #333333;
 }
 button.disabled:hover {

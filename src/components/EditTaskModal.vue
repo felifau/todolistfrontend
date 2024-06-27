@@ -11,12 +11,6 @@
 
         <label for="details">Details</label>
         <textarea id="details" v-model="editableTask.details"></textarea>
-
-        <label>
-          <input type="checkbox" v-model="editableTask.completed" />
-          Completed
-        </label>
-
         <button type="submit">Update Task</button>
         <button type="button" @click="closeModal">Cancel</button>
       </form>
@@ -83,7 +77,8 @@ export default defineComponent({
 }
 
 .modal-content {
-  background: white;
+  background: rgb(251,226,214);
+  background: radial-gradient(circle, rgba(251,226,214,0.6895133053221288) 0%, rgba(254,202,177,0.8603816526610644) 100%);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -93,7 +88,7 @@ export default defineComponent({
 
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 input,
@@ -114,12 +109,14 @@ button {
 }
 
 button[type='submit'] {
-  background-color: #28a745;
+  background: rgb(39,60,5);
+  background: linear-gradient(0deg, rgba(39,60,5,1) 0%, rgba(41,228,84,1) 100%);
   color: white;
 }
 
 button[type='button'] {
-  background-color: #dc3545;
+  background: rgb(60,5,5);
+  background: linear-gradient(0deg, rgba(60,5,5,1) 0%, rgba(253,45,45,1) 100%);
   color: white;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <DefaultBackground>
-    <h2 style="color: black">Task Manager</h2>
+    <h2 style="color: white">Task Manager</h2>
 
     <div>
       <ul class="nav nav-tabs" role="tablist">
@@ -9,8 +9,8 @@
                   :class="{ 'active': index === activeTab }"
                   @click="activeTab = index"
                   :aria-labelledby="'tab-' + index"
-                  style="font-size: 1.6em; color: gray; border: 1px solid gray; padding: 10px;">
-            <span style="font-size: 12px; color: darkgrey;">{{ list.title }}</span>
+                  style="font-size: 1.6em; color: black; border: 1px gray; padding: 10px;">
+            <span style="font-size: 12px; color: black;">{{ list.title }}</span>
           </button>
         </li>
       </ul>
@@ -233,12 +233,12 @@ export default defineComponent({
 <style scoped>
 form {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
+  flex-direction:column  ;
+  margin-bottom: 100px;
 }
 
 input {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 table {
@@ -250,7 +250,7 @@ table {
 th,
 td {
   padding: 10px;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #ddd;
 }
 
