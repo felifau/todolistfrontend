@@ -11,7 +11,7 @@ export function useListOfTasksController() {
 
   function createListOfTasks(): void {
     const listOfTasks = {
-      title: titleField.value
+      title: "New List"
     };
 
     axios

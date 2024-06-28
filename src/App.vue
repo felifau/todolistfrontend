@@ -1,6 +1,12 @@
 <template>
   <DefaultBackground>
-    <h2 style="color: white">Task Manager</h2>
+    <div style="display: inline-block;">
+      <h2 style="color: white; display: inline-block;">Task Manager</h2>
+      <DefaultButton @click="createListOfTasks" title="Create New List of Tasks"
+                     style="margin-right: 10px; padding: 5px; display: inline-block;">
+        <i class="bi bi-pen"></i>
+      </DefaultButton>
+    </div>
 
     <div>
       <ul class="nav nav-tabs" role="tablist">
@@ -9,7 +15,7 @@
                   :class="{ 'active': index === activeTab }"
                   @click="activeTab = index"
                   :aria-labelledby="'tab-' + index"
-                  style="font-size: 1.6em; color: black; border: 1px gray; padding: 10px;">
+                  style="font-size: 1.2em; color: black; border: 1px gray; padding: 4px;">
             <span style="font-size: 12px; color: black;">{{ list.title }}</span>
           </button>
         </li>
@@ -276,5 +282,6 @@ td {
   justify-content: flex-start;
   align-items: center;
   margin-top: 10px;
+  margin-bottom: 2px;
 }
 </style>
