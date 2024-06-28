@@ -19,19 +19,21 @@
         <div v-for="(list, index) in lists" :key="list.id" v-show="index === activeTab">
 
           <div class="action-buttons">
-            <DefaultButton @click="deleteList(list.id)"
-                           title="Deletes the list, all tasks will be reassigned to the Main list"
-                           style="margin-left: 10px;">
-              <i class="bi bi-trash"></i>
-            </DefaultButton>
-
-            <form @submit.prevent="updateList(list)" style="display: flex; align-items: center;">
-              <input type="text" v-model="list.title" placeholder="Enter new List Title..."
-                     style="margin-left: 10px; padding: 5px; font-size: 1em;" />
-              <DefaultButton type="submit">
-                <i class="bi bi-pen"></i>
+            <div style="display: inline-block;">
+              <DefaultButton @click="deleteList(list.id)"
+                             title="Deletes the list, all tasks will be reassigned to the Main list"
+                             style="margin-right: 10px;">
+                <i class="bi bi-trash"></i>
               </DefaultButton>
-            </form>
+              <form @submit.prevent="updateList(list)" style="display: inline-block;">
+                <input type="text" v-model="list.title" placeholder="Enter new List Title..."
+                       style="margin-right: 10px; padding: 5px; font-size: 1em;
+                       display: inline-block;" />
+                <DefaultButton type="submit" style="display: inline-block;">
+                  <i class="bi bi-pen"></i>
+                </DefaultButton>
+              </form>
+            </div>
           </div>
 
           <form @submit.prevent="setupTask(list.id)">
@@ -273,6 +275,6 @@ td {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 10px;
+  margin-top: 10px;
 }
 </style>
