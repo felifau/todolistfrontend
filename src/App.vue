@@ -17,13 +17,17 @@
 
       <div class="tab-content">
         <div v-for="(list, index) in lists" :key="list.id" v-show="index === activeTab">
-          <div style="margin-top: 10px; display: flex; align-items: center;">
-            <DefaultButton @click="deleteList(list.id)" title="Deletes the list, all tasks will be reassigned to the Main list">
+
+          <div class="action-buttons">
+            <DefaultButton @click="deleteList(list.id)"
+                           title="Deletes the list, all tasks will be reassigned to the Main list"
+                           style="margin-left: 10px;">
               <i class="bi bi-trash"></i>
             </DefaultButton>
+
             <form @submit.prevent="updateList(list)" style="display: flex; align-items: center;">
               <input type="text" v-model="list.title" placeholder="Enter new List Title..."
-                     style="margin-right: 10px; padding: 5px; font-size: 1em; flex: 1;" />
+                     style="margin-left: 10px; padding: 5px; font-size: 1em;" />
               <DefaultButton type="submit">
                 <i class="bi bi-pen"></i>
               </DefaultButton>
@@ -267,6 +271,8 @@ td {
 
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 10px;
 }
 </style>
