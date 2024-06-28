@@ -21,7 +21,13 @@
             <DefaultButton @click="deleteList(list.id)" title="Deletes the list, all tasks will be reassigned to the Main list">
               <i class="bi bi-trash"></i>
             </DefaultButton>
-            <input v-model="list.title" type="text" style="margin-left: 10px; padding: 5px; font-size: 1em;" />
+            <form @submit.prevent="updateList(list)" style="display: flex; align-items: center;">
+              <input type="text" v-model="list.title" placeholder="Enter new List Title..."
+                     style="margin-right: 10px; padding: 5px; font-size: 1em; flex: 1;" />
+              <DefaultButton type="submit" class="btn btn-primary">
+                <i class="bi bi-pen"></i>
+              </DefaultButton>
+            </form>
           </div>
 
           <form @submit.prevent="setupTask(list.id)">
@@ -57,7 +63,8 @@
 import { computed, defineComponent, onMounted, ref } from 'vue'
 import { useTaskController } from '@/types/TaskMixin';
 import { useListOfTasksController } from '@/types/ListOfTasksMixin';
-import type { ListOfTasks, Task } from '@/types/types'
+import type { Task } from '@/types/types'
+import type { ListOfTasks } from '@/types/ListOfTasks'
 import DefaultButton from '@/components/DefaultButton.vue'
 import EditTaskModal from '@/components/EditTaskModal.vue'
 import DefaultBackground from '@/components/DefaultBackground.vue'
@@ -93,7 +100,6 @@ export default defineComponent({
       updateList,
     } = useListOfTasksController();
 
-
     // mosks for Testing
     const mockTasks: Task[] = [
       {
@@ -116,6 +122,10 @@ export default defineComponent({
       },
     ];
 
+    interface ListOfTasks {
+      id: number;
+      title: string;
+    }
     // Моки данных для списков задач
     const mockLists: ListOfTasks[] = [
       {
@@ -136,6 +146,7 @@ export default defineComponent({
     const completedField = ref(false);
     const markedField = ref(false);
 
+    const titleOfListField = ref(1);
 
     const editMode = ref(false);
     const editTaskId = ref<number | null>(null);
