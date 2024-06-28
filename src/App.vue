@@ -24,7 +24,7 @@
             <form @submit.prevent="updateList(list)" style="display: flex; align-items: center;">
               <input type="text" v-model="list.title" placeholder="Enter new List Title..."
                      style="margin-right: 10px; padding: 5px; font-size: 1em; flex: 1;" />
-              <DefaultButton type="submit" class="btn btn-primary">
+              <DefaultButton type="submit">
                 <i class="bi bi-pen"></i>
               </DefaultButton>
             </form>
