@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ref, type Ref } from 'vue';
 import { format } from 'date-fns';
-import type { NewTask, Task } from '@/types/types'
+import type { ListOfTasks, NewTask, Task } from '@/types/types'
 
 const url = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 
@@ -28,7 +28,7 @@ export function useTaskController() {
       });
   }
 
-  function loadTasks(listId: number): void {
+  function loadTasks(listId: ListOfTasks): void {
     axios
       .get<Task[]>(`${url}/tasks/${listId}/getListOfTasks`)
       .then((response) => {

@@ -51,7 +51,7 @@
           </form>
           <TaskTable
             :tasks="tasks"
-            :filteredTasks="filteredTasks"
+            :filteredTasks="loadTasks(list)"
             @edit-task="editTask"
             @remove-task="removeTask"
             @mark-as-completed="markAsCompleted"
