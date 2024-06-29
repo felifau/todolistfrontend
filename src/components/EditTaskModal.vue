@@ -7,7 +7,7 @@
         <input type="text" id="title" v-model="editableTask.title" required />
 
         <label for="deadline">Deadline</label>
-        <input type="text" id="deadline" class="form-control datepicker" v-model="formattedDeadline" required />
+        <input type="date" id="deadline" v-model="editableTask.deadline" required />
 
         <label for="details">Details</label>
         <textarea id="details" v-model="editableTask.details"></textarea>
@@ -20,8 +20,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, onMounted, type PropType, ref, watch } from 'vue'
-import { format, parse } from 'date-fns'
+import { defineComponent, type PropType, ref, watch } from 'vue';
 
 interface Task {
   id: number;
@@ -43,52 +42,23 @@ export default defineComponent({
   emits: ['close', 'update'],
   setup(props, { emit }) {
     const editableTask = ref<Task>({ ...props.task });
-    const formattedDeadline = ref<string>(format(props.task.deadline, 'MM/dd/yyyy'));
-    let datepickerInstance: any = null;
 
     watch(() => props.task, (newTask) => {
       editableTask.value = { ...newTask };
-      formattedDeadline.value = format(newTask.deadline, 'MM/dd/yyyy');
-      if (datepickerInstance) {
-        datepickerInstance.update(newTask.deadline);
-      }
     });
 
     function updateTask() {
-      const parsedDate = parse(formattedDeadline.value, 'MM/dd/yyyy', new Date());
-      if (isNaN(parsedDate.getTime())) {
-        console.error('Ошибка при парсинге даты');
-        return;
-      }
-      editableTask.value.deadline = parsedDate;
+      emit('update', { ...editableTask.value });
     }
 
     function closeModal() {
       emit('close');
     }
 
-
-    onMounted(() => {
-      nextTick(() => {
-        datepickerInstance = new (window as any).
-          bootstrapDatepicker.
-          Datepicker(document.getElementById('deadline'), {
-          format: 'mm/dd/yyyy',
-          autoclose: true,
-        });
-        datepickerInstance.setDate(props.task.deadline);
-
-        datepickerInstance.getElement().addEventListener('changeDate', (e: any) => {
-          formattedDeadline.value = format(e.date, 'MM/dd/yyyy');
-        });
-      });
-    });
-
     return {
       editableTask,
       updateTask,
       closeModal,
-      formattedDeadline,
     };
   },
 });
