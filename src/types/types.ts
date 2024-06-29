@@ -5,7 +5,7 @@ export interface Task {
   deadline: Date;
   completed: boolean;
   marked: boolean;
-  listOfTasksId: number;
+  listOfTasks: ListOfTasks;
 }
 
 export interface ListOfTasks {
@@ -19,5 +19,5 @@ export interface NewTask {
   deadline: Date;
   completed: boolean;
   marked: boolean;
-  listOfTasksId: number;
+  listOfTasks: ListOfTasks;
 }
