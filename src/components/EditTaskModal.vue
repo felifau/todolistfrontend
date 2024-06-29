@@ -50,13 +50,17 @@ export default defineComponent({
       editableTask.value = { ...newTask };
       formattedDeadline.value = format(newTask.deadline, 'MM/dd/yyyy');
       if (datepickerInstance) {
-        datepickerInstance.update(newTask.deadline); // обновляем значение в Datepicker
+        datepickerInstance.update(newTask.deadline);
       }
     });
 
     function updateTask() {
-      editableTask.value.deadline = parse(formattedDeadline.value, 'MM/dd/yyyy', new Date());
-      emit('update', { ...editableTask.value });
+      const parsedDate = parse(formattedDeadline.value, 'MM/dd/yyyy', new Date());
+      if (isNaN(parsedDate.getTime())) {
+        console.error('Ошибка при парсинге даты');
+        return;
+      }
+      editableTask.value.deadline = parsedDate;
     }
 
     function closeModal() {
