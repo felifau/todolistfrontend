@@ -14,7 +14,7 @@
     </tr>
     <tr v-for="task in filteredTasks" :key="task.id">
       <td>{{ task.title }}</td>
-      <td>{{ task.deadline }}</td>
+      <td>{{ formatDate(task.deadline, 'MM/ dd/ yyyy') }}</td>
       <td>{{ task.completed ? 'Yes' : 'No' }}</td>
       <td>
         <div class="action-buttons">
@@ -46,6 +46,7 @@
 import { defineComponent } from 'vue';
 import DefaultButton from '@/components/DefaultButton.vue';
 import type { Task } from '@/types/types';
+import { formatDate } from 'date-fns'
 
 export default defineComponent({
   name: 'TaskTable',
@@ -63,6 +64,7 @@ export default defineComponent({
     DefaultButton,
   },
   methods: {
+    formatDate,
     editTask(id: number): void {
       this.$emit('edit-task', id);
     },

@@ -11,6 +11,7 @@
 
         <label for="details">Details</label>
         <textarea id="details" v-model="editableTask.details"></textarea>
+
         <button type="submit">Update Task</button>
         <button type="button" @click="closeModal">Cancel</button>
       </form>
@@ -41,12 +42,17 @@ export default defineComponent({
   emits: ['close', 'update'],
   setup(props, { emit }) {
     const editableTask = ref<Task>({ ...props.task });
+    const formattedDeadline = ref(
+      props.task.deadline ? props.task.deadline.toISOString().slice(0, 10) : ''
+    );
 
     watch(() => props.task, (newTask) => {
       editableTask.value = { ...newTask };
+      formattedDeadline.value = newTask.deadline ? newTask.deadline.toISOString().slice(0, 10) : '';
     });
 
     function updateTask() {
+      editableTask.value.deadline = new Date(formattedDeadline.value);
       emit('update', { ...editableTask.value });
     }
 
