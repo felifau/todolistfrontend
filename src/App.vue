@@ -200,7 +200,8 @@ export default defineComponent({
     }
 
     const filteredTasks = computed(() => {
-      return tasks.value.filter(task => task.listOfTasksId === lists.value[activeTab.value].id);
+      const activeListId = lists.value[activeTab.value].id;
+      return tasks.value.filter(task => task.listOfTasksId === activeListId);
     });
 
     onMounted(() => {
