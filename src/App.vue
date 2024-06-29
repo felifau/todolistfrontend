@@ -42,7 +42,7 @@
             </div>
           </div>
 
-          <form @submit.prevent="setupTask(list)">
+          <form @submit.prevent="setupTask(list.id)">
             <input type="text" placeholder="Enter the Title..." v-model="titleField" />
             <input type="date" placeholder="Enter the Deadline..." v-model="deadlineField" />
             <DefaultButton :disabled="!titleField || !deadlineField">
@@ -51,7 +51,7 @@
           </form>
           <TaskTable
             :tasks="tasks"
-            :filteredTasks="loadTasks(list)"
+            :filteredTasks="filteredTasks"
             @edit-task="editTask"
             @remove-task="removeTask"
             @mark-as-completed="markAsCompleted"
@@ -112,6 +112,46 @@ export default defineComponent({
       updateList,
     } = useListOfTasksController();
 
+    // mosks for Testing
+    const mockTasks: Task[] = [
+      {
+        id: 1,
+        title: 'Task 1',
+        details: 'Desc of T1',
+        deadline: new Date('2024-07-01'),
+        completed: false,
+        marked: false,
+        listOfTasksId: 1,
+      },
+      {
+        id: 2,
+        title: 'Task 2',
+        details: 'Desc of T2',
+        deadline: new Date('2024-07-02'),
+        completed: false,
+        marked: false,
+        listOfTasksId: 2,
+      },
+    ];
+
+    interface ListOfTasks {
+      id: number;
+      title: string;
+    }
+    // Моки данных для списков задач
+    const mockLists: ListOfTasks[] = [
+      {
+        id: 1,
+        title: 'Base',
+      },
+      {
+        id: 2,
+        title: 'Unbase',
+      },
+    ];
+    tasks.value = mockTasks;
+    lists.value = mockLists;
+
     const titleField = ref('');
     const detailsField = ref('');
     const deadlineField = ref();
@@ -128,14 +168,14 @@ export default defineComponent({
     // default active Tab
     const activeTab = ref(1);
 
-    function setupTask(listOfTasks: ListOfTasks): void {
+    function setupTask(listId: number): void {
       const newTask = {
         title: titleField.value,
         deadline: deadlineField.value,
         details: detailsField.value,
         completed: completedField.value,
         marked: markedField.value,
-        listOfTasks: listOfTasks,
+        listOfTasksId: listId,
       };
 
       createTask(newTask);
@@ -160,7 +200,7 @@ export default defineComponent({
     }
 
     const filteredTasks = computed(() => {
-      return tasks.value.filter(task => task.listOfTasks === lists.value[activeTab.value]);
+      return tasks.value.filter(task => task.listOfTasksId === lists.value[activeTab.value].id);
     });
 
     onMounted(() => {
