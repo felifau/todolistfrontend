@@ -20,7 +20,7 @@
 
           <div class="action-buttons">
             <div style="display: inline-block;">
-              <DefaultButton @click="deleteList(list.id)"
+              <DefaultButton @click="handleDeleteList(list.id)"
                              title="Deletes the list, all tasks will be reassigned to the Main list"
                              style="margin-right: 10px;">
                 <i class="bi bi-trash"></i>
@@ -195,6 +195,11 @@ export default defineComponent({
       currentTask.value = null;
     }
 
+    function handleDeleteList(id: number): void {
+      deleteList(id);
+      requestListsOfTasks();
+    }
+
     const filteredTasks = computed(() => {
       const activeListId = lists.value[activeTab.value].id;
       return tasks.value.filter(task => task.listOfTasksId === activeListId);
@@ -244,7 +249,8 @@ export default defineComponent({
       createListOfTasks,
       deleteList,
       updateList,
-      requestTasks
+      requestTasks,
+      handleDeleteList
     };
   },
 });
