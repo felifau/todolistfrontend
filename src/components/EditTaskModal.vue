@@ -21,7 +21,6 @@
 
 <script lang="ts">
 import { defineComponent, type PropType, ref, watch } from 'vue';
-import { formatDateToMMDDYYYY, parseDateFromMMDDYYYY } from '@/types/dateUtils'
 
 interface Task {
   id: number;
@@ -43,17 +42,12 @@ export default defineComponent({
   emits: ['close', 'update'],
   setup(props, { emit }) {
     const editableTask = ref<Task>({ ...props.task });
-    const formattedDeadline = ref(
-      props.task.deadline ? formatDateToMMDDYYYY(props.task.deadline) : ''
-    );
 
     watch(() => props.task, (newTask) => {
       editableTask.value = { ...newTask };
-      formattedDeadline.value = newTask.deadline ? formatDateToMMDDYYYY(newTask.deadline) : '';
     });
 
     function updateTask() {
-      editableTask.value.deadline = parseDateFromMMDDYYYY(formattedDeadline.value);
       emit('update', { ...editableTask.value });
     }
 

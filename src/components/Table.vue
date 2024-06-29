@@ -9,12 +9,12 @@
     </tr>
     </thead>
     <tbody>
-    <tr v-if="filteredTasks.length === 0">
+    <tr v-if="sortedTasks.length === 0">
       <td colspan="4">No tasks added so far!</td>
     </tr>
-    <tr v-for="task in filteredTasks" :key="task.id">
+    <tr v-for="task in sortedTasks" :key="task.id">
       <td>{{ task.title }}</td>
-      <td>{{ formatDate(task.deadline, 'MM/ dd/ yyyy') }}</td>
+      <td>{{ formatDate(task.deadline, 'MM/dd/yyyy') }}</td>
       <td>{{ task.completed ? 'Yes' : 'No' }}</td>
       <td>
         <div class="action-buttons">
@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
 import DefaultButton from '@/components/DefaultButton.vue';
 import type { Task } from '@/types/types';
 import { formatDate } from 'date-fns'
@@ -81,6 +81,13 @@ export default defineComponent({
       this.$emit('toggle-mark-task', id);
     },
   },
+  computed: {
+    sortedTasks(): Task[] {
+      return this.filteredTasks.slice().sort((a, b) => {
+        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+      });
+    }
+  }
 });
 </script>
 
