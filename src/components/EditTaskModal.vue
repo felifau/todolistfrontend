@@ -7,7 +7,7 @@
         <input type="text" id="title" v-model="editableTask.title" required />
 
         <label for="deadline">Deadline</label>
-        <input type="date" id="deadline" v-model="editableTask.deadline" required />
+        <input type="text" id="deadline" class="form-control datepicker" v-model="formattedDeadline" required />
 
         <label for="details">Details</label>
         <textarea id="details" v-model="editableTask.details"></textarea>
@@ -20,7 +20,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType, ref, watch } from 'vue';
+import { defineComponent, nextTick, onMounted, type PropType, ref, watch } from 'vue'
+import { format, parse } from 'date-fns'
 
 interface Task {
   id: number;
@@ -42,12 +43,19 @@ export default defineComponent({
   emits: ['close', 'update'],
   setup(props, { emit }) {
     const editableTask = ref<Task>({ ...props.task });
+    const formattedDeadline = ref<string>(format(props.task.deadline, 'MM/dd/yyyy'));
+    let datepickerInstance: any = null;
 
     watch(() => props.task, (newTask) => {
       editableTask.value = { ...newTask };
+      formattedDeadline.value = format(newTask.deadline, 'MM/dd/yyyy');
+      if (datepickerInstance) {
+        datepickerInstance.update(newTask.deadline); // обновляем значение в Datepicker
+      }
     });
 
     function updateTask() {
+      editableTask.value.deadline = parse(formattedDeadline.value, 'MM/dd/yyyy', new Date());
       emit('update', { ...editableTask.value });
     }
 
@@ -55,10 +63,28 @@ export default defineComponent({
       emit('close');
     }
 
+
+    onMounted(() => {
+      nextTick(() => {
+        datepickerInstance = new (window as any).
+          bootstrapDatepicker.
+          Datepicker(document.getElementById('deadline'), {
+          format: 'mm/dd/yyyy',
+          autoclose: true,
+        });
+        datepickerInstance.setDate(props.task.deadline);
+
+        datepickerInstance.getElement().addEventListener('changeDate', (e: any) => {
+          formattedDeadline.value = format(e.date, 'MM/dd/yyyy');
+        });
+      });
+    });
+
     return {
       editableTask,
       updateTask,
       closeModal,
+      formattedDeadline,
     };
   },
 });
