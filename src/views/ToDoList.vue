@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import ToDoList from "@/components/ToDoList.vue";
+import MainView from '@/components/MainView.vue'
 </script>
 
 <template>
   <main>
-    <ToDoList/>
+    <MainView/>
   </main>
 </template>
 
