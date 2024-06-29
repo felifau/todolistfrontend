@@ -1,7 +1,7 @@
 <template>
   <div class="task-manager-header">
     <h2 class="task-manager-title">Task Manager</h2>
-    <DefaultButton @click="createListOfTasks" title="Create New List of Tasks">
+    <DefaultButton @click="handleCreateListOfTasks" title="Create New List of Tasks">
       <i class="bi bi-pen"></i>
     </DefaultButton>
   </div>
@@ -11,7 +11,12 @@
 import DefaultButton from '@/components/DefaultButton.vue';
 import { useListOfTasksController } from '@/types/ListOfTasksMixin';
 
-const { createListOfTasks } = useListOfTasksController();
+const { createListOfTasks, requestListsOfTasks } = useListOfTasksController();
+
+function handleCreateListOfTasks() {
+  createListOfTasks();
+  requestListsOfTasks();
+}
 </script>
 
 <style scoped>
