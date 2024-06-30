@@ -6,7 +6,7 @@
         <label for="title">Title</label>
         <input type="text" id="title" v-model="editableTask.title" required />
 
-        <label for="deadline">New Deadline</label>
+        <label for="deadline">Deadline</label>
         <input type="date" id="deadline" v-model="editableTask.deadline" required />
 
         <label for="details">Details</label>
@@ -20,8 +20,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, type PropType, ref, watch } from 'vue'
-import { formatDate } from 'date-fns'
+import { defineComponent, type PropType, ref, watch } from 'vue';
 
 interface Task {
   id: number;
@@ -34,7 +33,6 @@ interface Task {
 
 export default defineComponent({
   name: 'EditTaskModal',
-  methods: { formatDate },
   props: {
     task: {
       type: Object as PropType<Task>,
@@ -44,18 +42,12 @@ export default defineComponent({
   emits: ['close', 'update'],
   setup(props, { emit }) {
     const editableTask = ref<Task>({ ...props.task });
-    const newDeadline = ref<string | null>(null);
-
-    const formattedCurrentDeadline = computed(() => {
-      return `Current deadline ${formatDate(editableTask.value.deadline, 'dd MMMM yyyy')}`;
-    });
 
     watch(() => props.task, (newTask) => {
       editableTask.value = { ...newTask };
     });
 
     function updateTask() {
-      editableTask.value.deadline = new Date(editableTask.value.deadline);
       emit('update', { ...editableTask.value });
     }
 
@@ -64,8 +56,6 @@ export default defineComponent({
     }
 
     return {
-      newDeadline,
-      formattedCurrentDeadline,
       editableTask,
       updateTask,
       closeModal,
