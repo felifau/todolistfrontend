@@ -14,7 +14,7 @@
     </tr>
     <tr v-for="task in sortedTasks" :key="task.id">
       <td>{{ task.title }}</td>
-      <td>{{ formatDate(task.deadline, 'MM/dd/yyyy') }}</td>
+      <td>{{ formatDate(task.deadline, 'dd MMMM yy') }}</td>
       <td>{{ task.completed ? 'Yes' : 'No' }}</td>
       <td>
         <div class="action-buttons">

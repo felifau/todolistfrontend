@@ -20,11 +20,6 @@
 
           <div class="action-buttons">
             <div style="display: inline-block;">
-              <DefaultButton @click="handleDeleteList(list.id)"
-                             title="Deletes the list, all tasks will be reassigned to the Main list"
-                             style="margin-right: 10px;">
-                <i class="bi bi-trash"></i>
-              </DefaultButton>
               <form @submit.prevent="updateList(list)" style="display: inline-block;">
                 <input type="text" v-model="list.title" placeholder="Enter new List Title..."
                        style="margin-right: 10px; padding: 5px; font-size: 1em;
@@ -134,7 +129,7 @@ export default defineComponent({
       id: number;
       title: string;
     }
-    // Моки данных для списков задач
+
     const mockLists: ListOfTasks[] = [
       {
         id: 1,
@@ -154,15 +149,13 @@ export default defineComponent({
     const completedField = ref(false);
     const markedField = ref(false);
 
-    const titleOfListField = ref(1);
-
     const editMode = ref(false);
     const editTaskId = ref<number | null>(null);
     const showModal = ref(false);
     const currentTask = ref<Task | null>(null);
     const currentListOfTasks = ref<number | null>(null);
     // default active Tab
-    const activeTab = ref(1);
+    const activeTab = ref(0);
 
     function setupTask(listId: number): void {
       const newTask = {
@@ -195,19 +188,14 @@ export default defineComponent({
       currentTask.value = null;
     }
 
-    function handleDeleteList(id: number): void {
-      deleteList(id);
-      requestListsOfTasks();
-    }
-
     const filteredTasks = computed(() => {
       const activeListId = lists.value[activeTab.value].id;
       return tasks.value.filter(task => task.listOfTasksId === activeListId);
     });
 
     onMounted(() => {
-      requestTasks();
       requestListsOfTasks();
+      requestTasks();
     });
 
     return {
@@ -250,7 +238,6 @@ export default defineComponent({
       deleteList,
       updateList,
       requestTasks,
-      handleDeleteList
     };
   },
 });
