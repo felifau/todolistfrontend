@@ -58,7 +58,7 @@ export default defineComponent({
     });
 
     function updateTask() {
-      if (newDeadline.value) {
+      if (newDeadline.value !== null && newDeadline.value !== '') {
         editableTask.value.deadline = new Date(newDeadline.value);
       }
       emit('update', { ...editableTask.value });
