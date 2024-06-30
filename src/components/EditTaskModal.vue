@@ -6,11 +6,8 @@
         <label for="title">Title</label>
         <input type="text" id="title" v-model="editableTask.title" required />
 
-        <label for="currentDeadline">Current deadline</label>
-        <div id="currentDeadline">{{ formattedCurrentDeadline }}</div>
-
         <label for="deadline">New Deadline</label>
-        <input type="date" id="deadline" v-model="newDeadline" />
+        <input type="date" id="deadline" v-model="editableTask.deadline" required />
 
         <label for="details">Details</label>
         <textarea id="details" v-model="editableTask.details"></textarea>
@@ -58,9 +55,6 @@ export default defineComponent({
     });
 
     function updateTask() {
-      if (newDeadline.value !== null && newDeadline.value !== '') {
-        editableTask.value.deadline = new Date(newDeadline.value);
-      }
       emit('update', { ...editableTask.value });
     }
 
