@@ -7,7 +7,7 @@
         <input type="text" id="title" v-model="editableTask.title" required />
 
         <label for="currentDeadline">Current deadline</label>
-        <div id="currentDeadline">{{ formatDate(editableTask.deadline, 'dd MMMM yy') }}</div>
+        <div id="currentDeadline">{{ formattedCurrentDeadline }}</div>
 
         <label for="deadline">New Deadline</label>
         <input type="date" id="deadline" v-model="newDeadline" />
@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType, ref, watch } from 'vue';
+import { computed, defineComponent, type PropType, ref, watch } from 'vue'
 import { formatDate } from 'date-fns'
 
 interface Task {
@@ -49,6 +49,10 @@ export default defineComponent({
     const editableTask = ref<Task>({ ...props.task });
     const newDeadline = ref<string | null>(null);
 
+    const formattedCurrentDeadline = computed(() => {
+      return `Current deadline ${formatDate(editableTask.value.deadline, 'dd MMMM yyyy')}`;
+    });
+
     watch(() => props.task, (newTask) => {
       editableTask.value = { ...newTask };
     });
@@ -66,6 +70,7 @@ export default defineComponent({
 
     return {
       newDeadline,
+      formattedCurrentDeadline,
       editableTask,
       updateTask,
       closeModal,
